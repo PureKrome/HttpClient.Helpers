@@ -14,7 +14,7 @@ To prevent this from happening in a *unit* test, some simple helpers are provide
 
 ### HttpClient only calls one endpoint / request Url
 <code>
-    const string requestUrl = "http://www.something.com/some/website";
+    const string requestUrl = "http://www.something.com/some/website";<br/>
     const string responseData = "I am not some Html.";
 
     // 1. Fake response.
@@ -30,17 +30,17 @@ To prevent this from happening in a *unit* test, some simple helpers are provide
 
 ### HttpClient calls multiple endpoints / request Url's
 <code>
-    // 1. Fake response #1.
-    const string requestUrl1 = "http://www.something.com/some/website";
-    const string responseData1 = "Fake response #1";
-    var messageResponse = FakeHttpMessageHandler.GetStringHttpResponseMessage(responseData1);
+    // 1. Fake response #1.<br/>
+    const string requestUrl1 = "http://www.something.com/some/website";<br/>
+    const string responseData1 = "Fake response #1";<br/>
+    var messageResponse = FakeHttpMessageHandler.GetStringHttpResponseMessage(responseData1);<br/>
 
-    // 1. Fake response #2.
+    // 2. Fake response #2.
     const string requestUrl2 = "http://www.pewpew.com/some/website";
     const string responseData2 = "Fake response #2";
     var messageResponse = FakeHttpMessageHandler.GetStringHttpResponseMessage(responseData2);
 
-    // 2. Fake handler that says: for any one of these 2 Url's, return their appropriate (fake) response.
+    // 3. Fake handler that says: for any one of these 2 Url's, return their appropriate (fake) response.<br/>
     var messageResponses = new Dictionary<string, HttpResponseMessage>
     {
         {requestUrl1, messageResponse1},
@@ -48,7 +48,7 @@ To prevent this from happening in a *unit* test, some simple helpers are provide
     };
     var messageHandler = new FakeHttpMessageHandler(messageResponses);
 
-    // 3. Go forth and win!
+    // 4. Go forth and win!
     var httpClient = new System.Net.Http.HttpClient(messageHandler);
     var result1 = await httpClient.GetStringAsync(requestUrl1);
     var result2 = await httpClient.GetStringAsync(requestUrl2);
