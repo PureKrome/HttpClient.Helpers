@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("HttpClient.Helpers")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("HttpClient helpers for System.Net.Http.HttpClient")]
+[assembly: AssemblyDescription("Some simple System.Net.Http.HttpClient helpers.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("HttpClient.Helpers")]
+[assembly: AssemblyCompany("World-Domination Technologies Pty. Ltd.")]
+[assembly: AssemblyProduct("")]
 [assembly: AssemblyCopyright("Copyright ©  2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
