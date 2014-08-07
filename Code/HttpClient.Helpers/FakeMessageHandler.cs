@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace HttpClient.Helpers
+namespace WorldDomination.HttpClient.Helpers
 {
     public class FakeHttpMessageHandler : HttpMessageHandler
     {

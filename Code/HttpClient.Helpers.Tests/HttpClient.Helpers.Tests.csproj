@@ -7,8 +7,8 @@
     <ProjectGuid>{B3672F4D-77A9-4E91-83FC-E017E38A0762}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>HttpClient.Helpers.Tests</RootNamespace>
-    <AssemblyName>HttpClient.Helpers.Tests</AssemblyName>
+    <RootNamespace>WorldDomination.HttpClient.Helpers.Tests</RootNamespace>
+    <AssemblyName>WorldDomination.HttpClient.Helpers.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

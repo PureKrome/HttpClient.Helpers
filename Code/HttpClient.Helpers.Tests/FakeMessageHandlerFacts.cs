@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Shouldly;
 using Xunit;
 
-namespace HttpClient.Helpers.Tests
+namespace WorldDomination.HttpClient.Helpers.Tests
 {
     public class FakeMessageHandlerFacts
     {

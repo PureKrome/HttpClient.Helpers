@@ -1,6 +1,6 @@
 ﻿using System.Net.Http;
 
-namespace HttpClient.Helpers
+namespace WorldDomination.HttpClient.Helpers
 {
     public static class HttpClientFactory
     {

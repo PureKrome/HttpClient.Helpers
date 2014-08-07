@@ -7,8 +7,8 @@
     <ProjectGuid>{CD2C1552-4AF1-4DC2-B0E6-90CE48D38F27}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>HttpClient.Helpers</RootNamespace>
-    <AssemblyName>HttpClient.Helpers</AssemblyName>
+    <RootNamespace>WorldDomination.HttpClient.Helpers</RootNamespace>
+    <AssemblyName>WorldDomination.HttpClient.Helpers</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
