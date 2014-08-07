@@ -20,6 +20,6 @@
         </dependencies>
     </metadata>
     <files>
-        <file src="..\Code\HttpClient.Helpers\bin\Release\HttpClient.Helpers.dll" target="lib\net40\HttpClient.Helpers.dll" />
+        <file src="..\Code\HttpClient.Helpers\bin\Release\HttpClient.Helpers.dll" target="lib\net45\HttpClient.Helpers.dll" />
     </files>
 </package>
