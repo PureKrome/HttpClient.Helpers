@@ -1,6 +1,6 @@
 #System.Net.Http.HttpClient.Helpers
 
-![](https://ci.appveyor.com/api/projects/status/ji2958rtahi80134)
+![](https://ci.appveyor.com/api/projects/status/siwilxb8t3enyus2)
 
 Code that uses `System.Net.Http.HttpClient` will attempt to actually call/hit that Http endpoint. 
 
