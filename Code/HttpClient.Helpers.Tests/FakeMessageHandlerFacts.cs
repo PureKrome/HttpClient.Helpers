@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Shouldly;
+using WorldDomination.Net.Http;
 using Xunit;
 
 namespace WorldDomination.HttpClient.Helpers.Tests
