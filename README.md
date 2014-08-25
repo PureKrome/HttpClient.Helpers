@@ -10,6 +10,8 @@ To prevent this from happening in a *unit* test, some simple helpers are provide
 
 ## Installation
 
+[![](http://i.imgur.com/oLtAwq9.png)](https://www.nuget.org/packages/WorldDomination.HttpClient.Helpers/)
+
 ## Examples
 
 ### HttpClient only calls one endpoint / request Url
