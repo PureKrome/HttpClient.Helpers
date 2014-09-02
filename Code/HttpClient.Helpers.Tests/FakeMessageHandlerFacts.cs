@@ -58,7 +58,6 @@ namespace WorldDomination.HttpClient.Helpers.Tests
                 content.ShouldBe(responseData);
             }
 
-
             [Fact]
             public async Task GivenAFewHttpResponseMessages_GetAsync_ReturnsAFakeResponse()
             {
