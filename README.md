@@ -14,7 +14,7 @@ To prevent this from happening in a *unit* test, some simple helpers are provide
 
 [![](http://i.imgur.com/oLtAwq9.png)](https://www.nuget.org/packages/WorldDomination.HttpClient.Helpers/)
 
-Package Name: `WorldDomination.HttpClient.Helpers` 
+Package Name: `WorldDomination.HttpClient.Helpers`  
 CLI: `install-package WorldDomination.HttpClient.Helpers`  
 
 
