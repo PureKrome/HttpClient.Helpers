@@ -1,4 +1,4 @@
-#Http.HttpClient.Helpers
+#HttpClient.Helpers
 
 [![](https://ci.appveyor.com/api/projects/status/siwilxb8t3enyus2)](https://ci.appveyor.com/project/PureKrome/httpcient-helpers) [![](http://img.shields.io/nuget/v/WorldDomination.HttpClient.Helpers.svg?style=flat-square)](http://www.nuget.org/packages/WorldDomination.HttpClient.Helpers/) ![](http://img.shields.io/nuget/dt/WorldDomination.HttpClient.Helpers.svg?style=flat-square)
 
