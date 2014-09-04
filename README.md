@@ -2,7 +2,7 @@
 
 ![](https://ci.appveyor.com/api/projects/status/siwilxb8t3enyus2)
 ![](http://img.shields.io/nuget/v/WorldDomination.HttpClient.Helpers.svg?style=flat-square)
-![](http://img.shields.io/nuget/dt/WorldDomination.HttpClient.Helpers.svg?style-flat-square)
+![](http://img.shields.io/nuget/dt/WorldDomination.HttpClient.Helpers.svg?style=flat-square)
 ---
 
 Code that uses `System.Net.Http.HttpClient` will attempt to actually call/hit that Http endpoint.
@@ -13,14 +13,40 @@ To prevent this from happening in a *unit* test, some simple helpers are provide
 
 ## Installation
 
-![](https://ci.appveyor.com/api/projects/status/siwilxb8t3enyus2)
-![](http://img.shields.io/nuget/v/WorldDomination.HttpClient.Helpers.svg?style=flat-square)
-![](http://img.shields.io/nuget/dt/WorldDomination.HttpClient.Helpers.svg?style=flat-square)
+[![](http://i.imgur.com/oLtAwq9.png)](https://www.nuget.org/packages/WorldDomination.HttpClient.Helpers/)
 
 
-### HttpClient only calls one endpoint / request Url
+## Sample Code
 
 ```C#
+public class MyService : IMyService
+{
+    public async Task<Foo> GetSomeDataAsync()
+    {
+        HttpResponseMessage message;
+        string content;
+        
+        // ** NOTE: We use the HttpClientFactory, making it easy to unit test this code.
+        using (var httpClient = HttpClientFactory.GetHttpClient())
+        {
+            message = await httpClient.GetAsync("http://www.something.com/some/website");
+            content = await message.Content.ReadAsStringAsync();
+        }
+        
+        if (message.StatusCode != HttpStatusCode.OK)
+        { 
+            // TODO: handle this ru-roh-error.
+        }
+        
+        // Assumption: content is in a json format.
+        var foo = JsonConvert.Deserialize<Foo>(content);
+        
+        return foo;
+    }
+}
+
+// ... and a unit test ...
+
 [Fact]
 public async Task GivenAValidHttpRequest_GetSomeDataAsync_ReturnsAFoo()
 {
