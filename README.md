@@ -1,8 +1,7 @@
 #Http.HttpClient.Helpers
 
-![](https://ci.appveyor.com/api/projects/status/siwilxb8t3enyus2)
-![](http://img.shields.io/nuget/v/WorldDomination.HttpClient.Helpers.svg?style=flat-square)
-![](http://img.shields.io/nuget/dt/WorldDomination.HttpClient.Helpers.svg?style=flat-square)
+[![](https://ci.appveyor.com/api/projects/status/siwilxb8t3enyus2)](https://ci.appveyor.com/project/PureKrome/httpcient-helpers) [![](http://img.shields.io/nuget/v/WorldDomination.HttpClient.Helpers.svg?style=flat-square)](http://www.nuget.org/packages/WorldDomination.HttpClient.Helpers/) ![](http://img.shields.io/nuget/dt/WorldDomination.HttpClient.Helpers.svg?style=flat-square)
+
 ---
 
 Code that uses `System.Net.Http.HttpClient` will attempt to actually call/hit that Http endpoint.
@@ -14,6 +13,9 @@ To prevent this from happening in a *unit* test, some simple helpers are provide
 ## Installation
 
 [![](http://i.imgur.com/oLtAwq9.png)](https://www.nuget.org/packages/WorldDomination.HttpClient.Helpers/)
+
+Package Name: `WorldDomination.HttpClient.Helpers` 
+CLI: `install-package WorldDomination.HttpClient.Helpers`  
 
 
 ## Sample Code
@@ -87,5 +89,5 @@ Finally, unit testing `HttpClient` is now awesome and simple!
 ![Wohoo](https://31.media.tumblr.com/43e63461d1e3f22a49b18dbf15227a1d/tumblr_inline_n3t10oQfIh1solpjm.gif)
 
 ---
-![I'm happy to accept tips](http://img.shields.io/gittip/purekrome.svg?style=flat-square)  
+[![I'm happy to accept tips](http://img.shields.io/gittip/purekrome.svg?style=flat-square)](https://gratipay.com/PureKrome/)  
 ![Lic: MIT](http://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)
