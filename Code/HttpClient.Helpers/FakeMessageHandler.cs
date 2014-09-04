@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace WorldDomination.Net.Http
 {
-    public class FakeHttpMessageHandler : HttpMessageHandler
+    public class FakeHttpMessageHandler : HttpClientHandler
     {
         private readonly HttpRequestException _exception;
         private readonly IDictionary<string, HttpResponseMessage> _responses;
