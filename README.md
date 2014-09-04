@@ -78,7 +78,15 @@ There's [plenty more examples](https://github.com/PureKrome/HttpClient.Helpers/w
  - [Wildcard endpoints](https://github.com/PureKrome/HttpClient.Helpers/wiki/Wildcard-endpoints)
  - [Throwing exceptions](https://github.com/PureKrome/HttpClient.Helpers/wiki/Faking-an-Exception) and handling it
 
-For more a few more samples, please check out the Wiki page: Helper Examples
+For all the samples, please [check out the Wiki page: Helper Examples](https://github.com/PureKrome/HttpClient.Helpers/wiki)
+
+-----
+
+Special Ackowledgements
+
+A special and sincere *thank you* to David Fowler ([@davidfowl](http://www.twitter.com/davidfowl)) who explained how I should be unit testing the `HttpClient` class and gave me the guidence to make this library. I was soooo on the wrong path - and he guided me back on track.
+
+Thank you David! :ok_hand: :cocktail: :space_invader:
 
 -----
 
