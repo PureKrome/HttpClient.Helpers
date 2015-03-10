@@ -99,9 +99,12 @@ namespace WorldDomination.Net.Http
             // 1. Exact match.
             // 2. Wildcard '*' == I don't care what the Uri is, just use this Response.
             // 3. Starts with == this is so we don't have to have a huge string in our test case. Just keeping code a bit cleaner.
+
+            // 1) & 3) checks.
             if (!_responses.TryGetValue(requestUri, out response) &&
                 !_responses.TryGetValue("*", out response))
             {
+                // 2) Starts-with check.
                 foreach (var key in _responses.Keys.Where(requestUri.StartsWith))
                 {
                     response = _responses[key];
@@ -110,11 +113,21 @@ namespace WorldDomination.Net.Http
 
                 if (response == null)
                 {
-                    // Nope - no keys found exactly OR starting with...
+                    // Nope - no keys found exactly OR starting-with...
+
+                    var responsesText = _responses == null
+                        ? "-none-"
+                        : string.Join(";", _responses.Keys);
+
                     var errorMessage =
                         string.Format(
-                            "No HttpResponseMessage found for the Request Uri: {0}. Please provide one in the FakeHttpMessageHandler constructor Or use a '*' for any request uri.",
-                            request.RequestUri);
+                            "No HttpResponseMessage found for the Request Uri: {0}. Please provide one in the FakeHttpMessageHandler constructor Or use a '*' for any request uri. Search-Key: '{1}. Setup: {2} responses: {3}",
+                            request.RequestUri,
+                            requestUri,
+                            _responses == null
+                                ? "- no responses -"
+                                : _responses.Count.ToString(),
+                                responsesText);
                     throw new InvalidOperationException(errorMessage);
                 }
             }
