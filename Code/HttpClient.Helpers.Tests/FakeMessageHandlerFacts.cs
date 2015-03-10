@@ -23,7 +23,7 @@ namespace WorldDomination.HttpClient.Helpers.Tests
 
                 HttpResponseMessage message;
                 string content;
-                using (var httpClient = new System.Net.Http.HttpClient(messageHandler))
+                using (var httpClient = HttpClientFactory.GetHttpClient(messageHandler))
                 {
                     // Act.
                     message = await httpClient.GetAsync(requestUrl);
@@ -42,11 +42,11 @@ namespace WorldDomination.HttpClient.Helpers.Tests
                 const string requestUrl = "http://www.something.com/some/website";
                 const string responseData = "I am not some Html.";
                 var messageResponse = FakeHttpMessageHandler.GetStringHttpResponseMessage(responseData);
-                HttpClientFactory.MessageHandler = new FakeHttpMessageHandler(requestUrl, messageResponse);
+                var messageHandler = new FakeHttpMessageHandler(requestUrl, messageResponse);
 
                 HttpResponseMessage message;
                 string content;
-                using (var httpClient = HttpClientFactory.GetHttpClient())
+                using (var httpClient = HttpClientFactory.GetHttpClient(messageHandler))
                 {
                     // Act.
                     message = await httpClient.GetAsync(requestUrl);
@@ -85,7 +85,7 @@ namespace WorldDomination.HttpClient.Helpers.Tests
                 
                 HttpResponseMessage message;
                 string content;
-                using (var httpClient = new System.Net.Http.HttpClient(messageHandler))
+                using (var httpClient = HttpClientFactory.GetHttpClient(messageHandler))
                 {
                     // Act.
                     message = await httpClient.GetAsync(requestUrl2);
@@ -120,11 +120,11 @@ namespace WorldDomination.HttpClient.Helpers.Tests
                     {requestUrl3, messageResponse3}
                 };
 
-                HttpClientFactory.MessageHandler = new FakeHttpMessageHandler(messageResponses);
+                var messageHandler = new FakeHttpMessageHandler(messageResponses);
 
                 HttpResponseMessage message;
                 string content;
-                using (var httpClient = HttpClientFactory.GetHttpClient())
+                using (var httpClient = HttpClientFactory.GetHttpClient(messageHandler))
                 {
                     // Act.
                     message = await httpClient.GetAsync(requestUrl2);
@@ -148,7 +148,7 @@ namespace WorldDomination.HttpClient.Helpers.Tests
 
                 HttpResponseMessage message;
                 string content;
-                using (var httpClient = new System.Net.Http.HttpClient(messageHandler))
+                using (var httpClient = HttpClientFactory.GetHttpClient(messageHandler))
                 {
                     // Act.
                     message = await httpClient.GetAsync("http://pewpew.com");
@@ -168,11 +168,11 @@ namespace WorldDomination.HttpClient.Helpers.Tests
                 var messageResponse = FakeHttpMessageHandler.GetStringHttpResponseMessage(responseData);
 
                 // No RequestUri == a wildcard == any url given.
-                HttpClientFactory.MessageHandler = new FakeHttpMessageHandler(messageResponse);
+                var messageHandler = new FakeHttpMessageHandler(messageResponse);
 
                 HttpResponseMessage message;
                 string content;
-                using (var httpClient = HttpClientFactory.GetHttpClient())
+                using (var httpClient = HttpClientFactory.GetHttpClient(messageHandler))
                 {
                     // Act.
                     message = await httpClient.GetAsync("http://pewpew.com");
@@ -211,7 +211,7 @@ namespace WorldDomination.HttpClient.Helpers.Tests
 
                 HttpResponseMessage message;
                 string content;
-                using (var httpClient = new System.Net.Http.HttpClient(messageHandler))
+                using (var httpClient = HttpClientFactory.GetHttpClient(messageHandler))
                 {
                     // Act.
                     message = await httpClient.GetAsync("http://pewpew.com");
@@ -246,11 +246,11 @@ namespace WorldDomination.HttpClient.Helpers.Tests
                     {requestUrl3, messageResponse3}
                 };
 
-                HttpClientFactory.MessageHandler = new FakeHttpMessageHandler(messageResponses);
+                var messageHandler = new FakeHttpMessageHandler(messageResponses);
 
                 HttpResponseMessage message;
                 string content;
-                using (var httpClient = HttpClientFactory.GetHttpClient())
+                using (var httpClient = HttpClientFactory.GetHttpClient(messageHandler))
                 {
                     // Act.
                     message = await httpClient.GetAsync("http://pewpew.com");
@@ -271,7 +271,7 @@ namespace WorldDomination.HttpClient.Helpers.Tests
                 var messageHandler = new FakeHttpMessageHandler(exception);
 
                 HttpRequestException result;
-                using (var httpClient = new System.Net.Http.HttpClient(messageHandler))
+                using (var httpClient = HttpClientFactory.GetHttpClient(messageHandler))
                 {
                     // Act.
                     result =
@@ -282,17 +282,16 @@ namespace WorldDomination.HttpClient.Helpers.Tests
                 // Assert.
                 result.Message.ShouldBe(errorMessage);
             }
-
             [Fact]
             public void GivenAnHttpClientExceptionAndTheHttpClientFactory_GetAsync_ReturnsAFakeResponse()
             {
                 // Arrange.
                 const string errorMessage = "Oh man - something bad happened.";
                 var exception = new HttpRequestException(errorMessage);
-                HttpClientFactory.MessageHandler = new FakeHttpMessageHandler(exception);
+                var httpMessageHandler = new FakeHttpMessageHandler(exception);
 
                 HttpRequestException result;
-                using (var httpClient = HttpClientFactory.GetHttpClient())
+                using (var httpClient = HttpClientFactory.GetHttpClient(httpMessageHandler))
                 {
                     // Act.
                     result = Should.Throw<HttpRequestException>(

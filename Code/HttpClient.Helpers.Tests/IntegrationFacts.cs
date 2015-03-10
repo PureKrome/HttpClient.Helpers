@@ -29,5 +29,62 @@ namespace WorldDomination.HttpClient.Helpers.Tests
             // Assert.
             html.ShouldNotBeNullOrEmpty();
         }
+
+        [Fact]
+        public async Task GivenTwoGetRequests_GetStringAsync_ReturnsSomeData()
+        {
+            // Arrange.
+            string html1, html2;
+
+            HttpClientFactory.MessageHandler = new HttpClientHandler
+            {
+                Credentials = new NetworkCredential("api", "hi there!")
+            };
+
+            using (var httpClient = HttpClientFactory.GetHttpClient())
+            {
+                html1 = await httpClient.GetStringAsync("http://www.google.com.au");
+            }
+
+            using (var httpClient = HttpClientFactory.GetHttpClient())
+            {
+                html2 = await httpClient.GetStringAsync("http://www.google.com.au");
+            }
+
+            // Assert.
+            html1.ShouldNotBeNullOrEmpty();
+            html2.ShouldNotBeNullOrEmpty();
+        }
+
+        [Fact]
+        public async Task GivenAGetRequestAndDifferentNetworkCredentials_GetStringAsync_ReturnsSomeData()
+        {
+            // Arrange.
+            string html1, html2;
+            
+            var credentials1 = new HttpClientHandler
+            {
+                Credentials = new NetworkCredential("api", "hi there!")
+            };
+            var credentials2 = new HttpClientHandler
+            {
+                Credentials = new NetworkCredential("cccc", "ddddd")
+            };
+
+            // Act.
+            using (var httpClient = HttpClientFactory.GetHttpClient(credentials1))
+            {
+                html1 = await httpClient.GetStringAsync("http://www.google.com.au");
+            }
+
+            using (var httpClient = HttpClientFactory.GetHttpClient(credentials2))
+            {
+                html2 = await httpClient.GetStringAsync("http://www.google.com.au");
+            }
+
+            // Assert.
+            html1.ShouldNotBeNullOrEmpty();
+            html2.ShouldNotBeNullOrEmpty();
+        }
     }
 }
