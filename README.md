@@ -19,17 +19,20 @@ CLI: `install-package WorldDomination.HttpClient.Helpers`
 
 
 ## Sample Code
+This sample uses the Factory and a Key. The other option is to use constructor injection with a FakeMessageHandler parameter.
 
 ```C#
 public class MyService : IMyService
 {
+    public const string SomeKey = "pewpew";
+    
     public async Task<Foo> GetSomeDataAsync()
     {
         HttpResponseMessage message;
         string content;
         
         // ** NOTE: We use the HttpClientFactory, making it easy to unit test this code.
-        using (var httpClient = HttpClientFactory.GetHttpClient())
+        using (var httpClient = HttpClientFactory.GetHttpClient(SomeKey))
         {
             message = await httpClient.GetAsync("http://www.something.com/some/website");
             content = await message.Content.ReadAsStringAsync();
@@ -61,7 +64,10 @@ public async Task GivenAValidHttpRequest_GetSomeDataAsync_ReturnsAFoo()
     var messageResponse = FakeHttpMessageHandler.GetStringHttpResponseMessage(responseData);  
 
     // 2. Fake handler that says: for this Url, return this (fake) response.  
-    HttpClientFactory.MessageHandler = new FakeHttpMessageHandler(requestUrl, messageResponse);
+    var messageHandler = new FakeHttpMessageHandler(requestUrl, messageResponse);
+    
+    // 3. Add this message handler to the factory, for the specific key.
+    HttpClientFactory.AddMessageHandler(messageHandler, MyService.SomeKey);
     
     // Act.
     // NOTE: network traffic will not leave your computer because you've faked the response, above.
