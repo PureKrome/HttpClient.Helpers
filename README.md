@@ -19,7 +19,7 @@ CLI: `install-package WorldDomination.HttpClient.Helpers`
 
 
 ## Sample Code
-This sample uses the Factory and a Key. The other option is to use constructor injection with a FakeMessageHandler parameter.
+This sample uses the Factory and a Key. The other option is to use [constructor injection with a `FakeHttpMessageHandler` parameter](https://github.com/PureKrome/HttpClient.Helpers/wiki/Constructor-Injection).
 
 ```C#
 public class MyService : IMyService
