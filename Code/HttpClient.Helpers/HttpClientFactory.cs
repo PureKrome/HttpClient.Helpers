@@ -15,20 +15,17 @@ namespace WorldDomination.Net.Http
         {
             if (messageHandler == null)
             {
-                throw new ArgumentNullException("messageHandler");
+                throw new ArgumentNullException(nameof(messageHandler));
             }
 
             if (string.IsNullOrWhiteSpace(key))
             {
-                throw new ArgumentNullException("key");
+                throw new ArgumentNullException(nameof(key));
             }
 
             if (MessageHandlers.Value.ContainsKey(key))
             {
-                var errorMessage =
-                    string.Format(
-                        "Unable to add the MessageHandler instance because the key '{0}' -already- exists. Please use another key.",
-                        key);
+                var errorMessage = string.Format($"Unable to add the MessageHandler instance because the key '{key}' -already- exists. Please use another key.");
                 throw new Exception(errorMessage);
             }
 
@@ -39,7 +36,7 @@ namespace WorldDomination.Net.Http
         {
             if (string.IsNullOrWhiteSpace(key))
             {
-                throw new ArgumentNullException("key");
+                throw new ArgumentNullException(nameof(key));
             }
 
             MessageHandlers.Value.Remove(key);
@@ -68,7 +65,7 @@ namespace WorldDomination.Net.Http
         {
             if (string.IsNullOrWhiteSpace(messageHandlerKey))
             {
-                throw new ArgumentNullException("messageHandlerKey");
+                throw new ArgumentNullException(nameof(messageHandlerKey));
             }
 
             // Determine which message handler we should use.

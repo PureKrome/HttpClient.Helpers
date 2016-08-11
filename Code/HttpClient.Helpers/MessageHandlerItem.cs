@@ -10,7 +10,7 @@ namespace WorldDomination.Net.Http
         {
             if (httpMessageHandler == null)
             {
-                throw new ArgumentNullException("httpMessageHandler");
+                throw new ArgumentNullException(nameof(httpMessageHandler));
             }
 
             HttpMessageHandler = httpMessageHandler;

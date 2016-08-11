@@ -48,6 +48,7 @@
   <ItemGroup>
     <Compile Include="FakeMessageHandler.cs" />
     <Compile Include="HttpClientFactory.cs" />
+    <Compile Include="HttpMessageOptions.cs" />
     <Compile Include="MessageHandlerItem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

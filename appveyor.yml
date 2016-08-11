@@ -1,2 +1,66 @@
+
+#
+# Current setup:
+# - All development is done in a fork.
+# - Pull requests are merged into dev and it auto publishes
+#   to the myget pre-release 'pk-development' feed.
+# - When publishing to master we just merge dev to master.
+# - ASKJDHAKJSDHASj
+#
+
+
+version: '{build}.0.0-dev'
+configuration: Release
+os: Visual Studio 2015
+pull_requests:
+  do_not_increment_build_number: true
+
+environment:
+  myget_username:
+    secure: jSEcK6UBtSuezBWzqRLF0w==
+  myget_api_key:
+    secure: 36bcjhroAjclbHs7e7oh6Hsv4lokADI6xaQcCYZmux2Sdu/IIoktFc9ORK3DTdKo
+
+# Override the 'version' if this is a GH-tag-commit.
+# If a Tag, then we only pull down master.
+init:
+  - ps: if ($env:APPVEYOR_REPO_TAG -eq $TRUE) { if ($env:APPVEYOR_REPO_BRANCH -ne 'master') { Write-Host " !! Commit is Tagged and branch is '$env:APPVEYOR_REPO_BRANCH' - forcing branch to 'master'." -ForegroundColor Red; $env:APPVEYOR_REPO_BRANCH = 'master' } Update-AppveyorBuild -Version "$env:APPVEYOR_REPO_TAG_NAME" }
+  - ps: iex ((new-object net.webclient).DownloadString('https://gist.githubusercontent.com/PureKrome/0f79e25693d574807939/raw/4a00b443bd9ad908768593244fc08061ec8e1ccc/appveyor-build-info.ps'))
+                                         
 before_build:
   - nuget restore
+
+assembly_info:
+  patch: true
+  file: AssemblyInfo.*
+  assembly_version: $(appveyor_build_version)
+  assembly_file_version: $(appveyor_build_version)
+  assembly_informational_version: $(appveyor_build_version)
+
+build:
+  parallel: true
+  verbosity: minimal
+  publish_nuget: true
+  publish_nuget_symbols: false
+  include_nuget_references: false
+  
+deploy:
+  - provider: NuGet
+    server: https://www.myget.org/F/pk-development/api/v2/package
+    api_key:
+      secure: 36bcjhroAjclbHs7e7oh6Hsv4lokADI6xaQcCYZmux2Sdu/IIoktFc9ORK3DTdKo
+    skip_symbols: true
+    artifact: /.*\.nupkg/
+    on:
+      branch: dev
+  - provider: NuGet
+    api_key:
+      secure: jfcUvHZhgnUboplqTBDWr8mG5PIlrgBv5TA2fhhop4ZSiDxskyy+RtYyeHoduJFRd3btNzYsR8ps
+    skip_symbols: true
+    artifact: /.*\.nupkg/
+    on:
+      branch: master
+      appveyor_repo_tag: true
+
+cache:
+  - packages -> **\packages.config

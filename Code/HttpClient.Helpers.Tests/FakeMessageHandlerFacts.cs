@@ -83,7 +83,7 @@ namespace WorldDomination.HttpClient.Helpers.Tests
                 };
 
                 var messageHandler = new FakeHttpMessageHandler(messageResponses);
-                
+
                 HttpResponseMessage message;
                 string content;
                 using (var httpClient = HttpClientFactory.GetHttpClient(messageHandler))
@@ -162,7 +162,8 @@ namespace WorldDomination.HttpClient.Helpers.Tests
             }
 
             [Fact]
-            public async Task GivenAnHttpResponseMessageAndNoRequestUriAndTheHttpClientFactory_GetAsync_ReturnsAFakeResponse()
+            public async Task
+                GivenAnHttpResponseMessageAndNoRequestUriAndTheHttpClientFactory_GetAsync_ReturnsAFakeResponse()
             {
                 // Arrange.
                 const string responseData = "I am not some Html.";
@@ -225,7 +226,8 @@ namespace WorldDomination.HttpClient.Helpers.Tests
             }
 
             [Fact]
-            public async Task GivenAFewHttpResponseMessagesWithAWildcardAndTheHttpClientFactory_GetAsync_ReturnsTheWildcardResponse()
+            public async Task
+                GivenAFewHttpResponseMessagesWithAWildcardAndTheHttpClientFactory_GetAsync_ReturnsTheWildcardResponse()
             {
                 // Arrange.
                 const string requestUrl1 = "http://www.something.com/some/website";
@@ -297,11 +299,67 @@ namespace WorldDomination.HttpClient.Helpers.Tests
                 {
                     // Act.
                     result = Should.Throw<HttpRequestException>(
-                            async () => await httpClient.GetAsync("http://www.something.com/some/website"));
+                        async () => await httpClient.GetAsync("http://www.something.com/some/website"));
                 }
 
                 // Assert.
                 result.Message.ShouldBe(errorMessage);
+            }
+
+            [Fact]
+            public async Task GivenAnHttpVerb_DeleteAsync_ReturnsAFakeResponse()
+            {
+                // Arrange.
+                const string requestUrl = "http://www.something.com/some/website";
+                const string responseData = "Delete me plz";
+                var messageResponse = FakeHttpMessageHandler.GetStringHttpResponseMessage(responseData);
+                var options = new HttpMessageOptions
+                {
+                    RequestUri = requestUrl,
+                    HttpMethod = HttpMethod.Delete,
+                    HttpResponseMessage = messageResponse
+                };
+                var messageHandler = new FakeHttpMessageHandler(options);
+
+                HttpResponseMessage message;
+                string content;
+                using (var httpClient = HttpClientFactory.GetHttpClient(messageHandler))
+                {
+                    // Act.
+                    message = await httpClient.DeleteAsync(requestUrl);
+                    content = await message.Content.ReadAsStringAsync();
+                }
+
+                // Assert.
+                message.StatusCode.ShouldBe(HttpStatusCode.OK);
+                content.ShouldBe(responseData);
+            }
+
+            [Fact]
+            public void GivenAnInvalidHttpVerb_GetAsync_ThrowsAnException()
+            {
+                // Arrange.
+                const string requestUrl = "http://www.something.com/some/website";
+                const string responseData = "Delete me plz";
+                var messageResponse = FakeHttpMessageHandler.GetStringHttpResponseMessage(responseData);
+                var options = new HttpMessageOptions
+                {
+                    RequestUri = requestUrl,
+                    HttpMethod = HttpMethod.Delete,
+                    HttpResponseMessage = messageResponse
+                };
+                var messageHandler = new FakeHttpMessageHandler(options);
+
+                Exception exception;
+                using (var httpClient = HttpClientFactory.GetHttpClient(messageHandler))
+                {
+                    // Act.
+                    exception = Should.Throw<InvalidOperationException>(() => httpClient.GetAsync(requestUrl));
+                }
+
+                // Assert.
+                exception.Message.ShouldBe(
+                    $"No HttpResponseMessage found for the Request Uri: {requestUrl}. Please provide one in the FakeHttpMessageHandler constructor Or use a '*' for any request uri. Search-Key: '{requestUrl}. Setup: 1 responses: DELETE {requestUrl}");
             }
         }
 
