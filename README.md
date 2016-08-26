@@ -1,6 +1,9 @@
 #HttpClient.Helpers
 
-[![](https://ci.appveyor.com/api/projects/status/siwilxb8t3enyus2)](https://ci.appveyor.com/project/PureKrome/httpcient-helpers) [![](http://img.shields.io/nuget/v/WorldDomination.HttpClient.Helpers.svg?style=flat-square)](http://www.nuget.org/packages/WorldDomination.HttpClient.Helpers/) ![](http://img.shields.io/nuget/dt/WorldDomination.HttpClient.Helpers.svg?style=flat-square)
+| Stage       | CI | NuGet |
+|-------------|----|-------|
+| Production  | [![Build status](https://ci.appveyor.com/api/projects/status/siwilxb8t3enyus2/branch/master?svg=true)](https://ci.appveyor.com/project/PureKrome/httpclient-helpers) |  [![NuGet Badge](https://buildstats.info/nuget/WorldDomination.HttpClient.Helpers)](https://www.nuget.org/packages/WorldDomination.HttpClient.Helpers/) |
+| Development | [![Build status](https://ci.appveyor.com/api/projects/status/siwilxb8t3enyus2/branch/dev?svg=true)](https://ci.appveyor.com/project/PureKrome/httpclient-helpers) | [![MyGet Badge](https://buildstats.info/myget/pk-development/WorldDomination.HttpClient.Helpers)](https://www.myget.org/feed/pk-development/package/nuget/WorldDomination.HttpClient.Helpers) |
 
 ---
 
