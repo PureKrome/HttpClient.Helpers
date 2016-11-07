@@ -12,7 +12,9 @@ namespace WorldDomination.Net.Http
     public class FakeHttpMessageHandler : HttpClientHandler
     {
         private readonly HttpRequestException _exception;
-        private readonly IDictionary<string, HttpMessageOptions> _lotsOfOptions = new Dictionary<string, HttpMessageOptions>();
+
+        private readonly IDictionary<string, HttpMessageOptions> _lotsOfOptions =
+            new Dictionary<string, HttpMessageOptions>();
 
         /// <summary>
         /// A fake message handler.
@@ -48,8 +50,7 @@ namespace WorldDomination.Net.Http
 
         //    _responses = httpResponseMessages;
         //}
-
-        public FakeHttpMessageHandler(HttpMessageOptions options) : this(new List<HttpMessageOptions> { options})
+        public FakeHttpMessageHandler(HttpMessageOptions options) : this(new List<HttpMessageOptions> {options})
         {
         }
 
@@ -71,12 +72,12 @@ namespace WorldDomination.Net.Http
                 HttpResponseMessage = item.Value
             });
 
-            Initialize(options);
+            Initialize(options.ToArray());
         }
 
         public FakeHttpMessageHandler(IEnumerable<HttpMessageOptions> lotsOfOptions)
         {
-            Initialize(lotsOfOptions);
+            Initialize(lotsOfOptions.ToArray());
         }
 
         /// <summary>
@@ -101,7 +102,7 @@ namespace WorldDomination.Net.Http
         {
             if (exception == null)
             {
-                throw new ArgumentNullException("exception");
+                throw new ArgumentNullException(nameof(exception));
             }
 
             _exception = exception;
@@ -124,7 +125,7 @@ namespace WorldDomination.Net.Http
             var tcs = new TaskCompletionSource<HttpResponseMessage>();
 
             HttpMessageOptions options;
-            var requestUri = request.RequestUri.ToString();
+            var requestUri = request.RequestUri.AbsoluteUri;
 
             // If we don't care 
             var uniqueKey = CreateDictionaryKey(requestUri, request.Method);
@@ -155,14 +156,7 @@ namespace WorldDomination.Net.Http
                         : string.Join(";", _lotsOfOptions.Values);
 
                     var errorMessage =
-                        string.Format(
-                            "No HttpResponseMessage found for the Request Uri: {0}. Please provide one in the FakeHttpMessageHandler constructor Or use a '*' for any request uri. Search-Key: '{1}. Setup: {2} responses: {3}",
-                            request.RequestUri,
-                            requestUri,
-                            !_lotsOfOptions.Any()
-                                ? "- no responses -"
-                                : _lotsOfOptions.Count.ToString(),
-                                responsesText);
+                        $"No HttpResponseMessage found for the Request Uri: {request.RequestUri}. Please provide one in the FakeHttpMessageHandler constructor Or use a '*' for any request uri. Search-Key: '{requestUri}. Setup: {(!_lotsOfOptions.Any() ? "- no responses -" : _lotsOfOptions.Count.ToString())} responses: {responsesText}";
                     throw new InvalidOperationException(errorMessage);
                 }
             }
@@ -185,7 +179,7 @@ namespace WorldDomination.Net.Http
             };
         }
 
-        private void Initialize(IEnumerable<HttpMessageOptions> lotsOfOptions)
+        private void Initialize(ICollection<HttpMessageOptions> lotsOfOptions)
         {
             if (lotsOfOptions == null)
             {
@@ -207,7 +201,7 @@ namespace WorldDomination.Net.Http
         private static string CreateDictionaryKey(string requestUri, HttpMethod httpMethod)
         {
             var httpMethodText = httpMethod?.ToString() ?? "*";
-            return string.Format($"{requestUri}||{httpMethodText}");
+            return $"{requestUri}||{httpMethodText}";
         }
     }
 }
