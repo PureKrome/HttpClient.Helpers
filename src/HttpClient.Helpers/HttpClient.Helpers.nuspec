@@ -16,7 +16,7 @@
         <language>en-AU</language>
         <tags>httpclient worlddomination worldomination unicorn magicalunicorn magical-unicorn</tags>
         <dependencies>
-            <dependency id="Microsoft.Net.Http" version="[2.2.29, 3.0.0)" />
+            <dependency id="Microsoft.Net.Http" version="2.2.29" />
         </dependencies>
     </metadata>
     <files>
