@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpClient.Helpers", "Code\HttpClient.Helpers\HttpClient.Helpers.csproj", "{CD2C1552-4AF1-4DC2-B0E6-90CE48D38F27}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpClient.Helpers", "src\HttpClient.Helpers\HttpClient.Helpers.csproj", "{CD2C1552-4AF1-4DC2-B0E6-90CE48D38F27}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpClient.Helpers.Tests", "Code\HttpClient.Helpers.Tests\HttpClient.Helpers.Tests.csproj", "{B3672F4D-77A9-4E91-83FC-E017E38A0762}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpClient.Helpers.Tests", "tests\HttpClient.Helpers.Tests\HttpClient.Helpers.Tests.csproj", "{B3672F4D-77A9-4E91-83FC-E017E38A0762}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
