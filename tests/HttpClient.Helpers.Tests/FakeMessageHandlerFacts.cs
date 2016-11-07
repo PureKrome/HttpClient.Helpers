@@ -363,6 +363,35 @@ namespace WorldDomination.HttpClient.Helpers.Tests
                 exception.Message.ShouldBe(
                     $"No HttpResponseMessage found for the Request Uri: {requestUrl}. Please provide one in the FakeHttpMessageHandler constructor Or use a '*' for any request uri. Search-Key: '{requestUrl}. Setup: 1 responses: DELETE {requestUrl}");
             }
+
+            [Fact]
+            public async Task GivenAnRequestUrlWithEncodedJson_GetAsync_ReturnsAFakeResponse()
+            {
+                // Arrange.
+                var requestUri = new Uri("http://www.whatever.com/something?json=%7B%0A%20%20%20%22Ids%22%3A%20%5B16036%2C1%5D%0A%7D");
+                const string responseData = "I am not some Html.";
+                var messageResponse1 = FakeHttpMessageHandler.GetStringHttpResponseMessage(responseData);
+
+                var messageResponses = new Dictionary<string, HttpResponseMessage>
+                {
+                    {requestUri.AbsoluteUri, messageResponse1},
+                };
+
+                var messageHandler = new FakeHttpMessageHandler(messageResponses);
+
+                HttpResponseMessage message;
+                string content;
+                using (var httpClient = HttpClientFactory.GetHttpClient(messageHandler))
+                {
+                    // Act.
+                    message = await httpClient.GetAsync(requestUri);
+                    content = await message.Content.ReadAsStringAsync();
+                }
+
+                // Assert.
+                message.StatusCode.ShouldBe(HttpStatusCode.OK);
+                content.ShouldBe(responseData);
+            }
         }
 
         public class AddMessageFacts

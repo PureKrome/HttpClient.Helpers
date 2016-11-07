@@ -72,12 +72,12 @@ namespace WorldDomination.Net.Http
                 HttpResponseMessage = item.Value
             });
 
-            Initialize(options);
+            Initialize(options.ToArray());
         }
 
         public FakeHttpMessageHandler(IEnumerable<HttpMessageOptions> lotsOfOptions)
         {
-            Initialize(lotsOfOptions);
+            Initialize(lotsOfOptions.ToArray());
         }
 
         /// <summary>
@@ -125,7 +125,7 @@ namespace WorldDomination.Net.Http
             var tcs = new TaskCompletionSource<HttpResponseMessage>();
 
             HttpMessageOptions options;
-            var requestUri = request.RequestUri.ToString();
+            var requestUri = request.RequestUri.AbsoluteUri;
 
             // If we don't care 
             var uniqueKey = CreateDictionaryKey(requestUri, request.Method);
@@ -201,7 +201,7 @@ namespace WorldDomination.Net.Http
         private static string CreateDictionaryKey(string requestUri, HttpMethod httpMethod)
         {
             var httpMethodText = httpMethod?.ToString() ?? "*";
-            return string.Format($"{requestUri}||{httpMethodText}");
+            return $"{requestUri}||{httpMethodText}";
         }
     }
 }
