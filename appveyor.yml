@@ -4,8 +4,8 @@
 # - All development is done in a fork.
 # - Pull requests are merged into dev and it auto publishes
 #   to the myget pre-release 'pk-development' feed.
-# - When publishing to master we just merge dev to master.
-# - ASKJDHAKJSDHASj
+# - When publishing to master we just merge dev to master -but- no NuGet is made.
+# - To publish a live NuGet package, create a tag on master branch.
 #
 
 

@@ -9,7 +9,7 @@ namespace WorldDomination.Net.Http
         private static readonly Lazy<Dictionary<string, MessageHandlerItem>> MessageHandlers =
             new Lazy<Dictionary<string, MessageHandlerItem>>();
 
-        public static void AddMessageHandler(HttpMessageHandler messageHandler, 
+        public static void AddMessageHandler(HttpMessageHandler messageHandler,
             string key,
             bool disposeHandler = true)
         {
@@ -25,7 +25,8 @@ namespace WorldDomination.Net.Http
 
             if (MessageHandlers.Value.ContainsKey(key))
             {
-                var errorMessage = string.Format($"Unable to add the MessageHandler instance because the key '{key}' -already- exists. Please use another key.");
+                var errorMessage =
+                    $"Unable to add the MessageHandler instance because the key '{key}' -already- exists. Please use another key.";
                 throw new Exception(errorMessage);
             }
 
