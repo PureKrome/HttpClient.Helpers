@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Shouldly;
 using WorldDomination.Net.Http;
 using Xunit;
+// ReSharper disable ConsiderUsingConfigureAwait
 
 namespace WorldDomination.HttpClient.Helpers.Tests
 {
@@ -87,7 +88,7 @@ namespace WorldDomination.HttpClient.Helpers.Tests
                 using (var httpClient = HttpClientFactory.GetHttpClient(key))
                 {
                     var client = httpClient;
-                    exception = Should.Throw<Exception>( 
+                    exception = Should.Throw<Exception>(
                         async () => await client.GetStringAsync("http://www.google.com.au"));
                 }
 
@@ -116,16 +117,6 @@ namespace WorldDomination.HttpClient.Helpers.Tests
             }
 
             [Fact]
-            public void GivenNoMessageHandlerExists_RemoveMessageHandler_Succeeds()
-            {
-                // Arrange.
-                var key = Guid.NewGuid().ToString();
-
-                // Act & Assert.
-                HttpClientFactory.RemoveMessageHandler(key);
-            }
-
-            [Fact]
             public void GivenAMessageHandlerExistsByADifferentKeyIsProvided_RemoveMessageHandler_Succeeds()
             {
                 // Arrange.
@@ -138,6 +129,16 @@ namespace WorldDomination.HttpClient.Helpers.Tests
 
                 // Act & Assert.
                 HttpClientFactory.RemoveMessageHandler(Guid.NewGuid().ToString());
+            }
+
+            [Fact]
+            public void GivenNoMessageHandlerExists_RemoveMessageHandler_Succeeds()
+            {
+                // Arrange.
+                var key = Guid.NewGuid().ToString();
+
+                // Act & Assert.
+                HttpClientFactory.RemoveMessageHandler(key);
             }
         }
 
