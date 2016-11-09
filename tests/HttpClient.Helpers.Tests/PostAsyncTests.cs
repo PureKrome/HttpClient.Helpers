@@ -11,7 +11,7 @@ using Xunit;
 
 namespace WorldDomination.HttpClient.Helpers.Tests
 {
-    public class SendAsyncTests
+    public class PostAsyncTests
     {
         public static IEnumerable<object[]> ValidPostHttpContent
         {

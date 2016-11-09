@@ -64,8 +64,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FakeMessageHandlerFacts.cs" />
+    <Compile Include="GetAsyncTests.cs" />
+    <Compile Include="GetStringAsyncTests.cs" />
     <Compile Include="IntegrationFacts.cs" />
-    <Compile Include="SendAsyncTests.cs" />
+    <Compile Include="PostAsyncTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
