@@ -392,6 +392,34 @@ namespace WorldDomination.HttpClient.Helpers.Tests
                 message.StatusCode.ShouldBe(HttpStatusCode.OK);
                 content.ShouldBe(responseData);
             }
+
+
+            [Fact]
+            public async Task GivenAllAllWildcardRequest_GetAsync_ReturnsAFakeResponse()
+            {
+                // Arrange.
+                var requestUri = new Uri("http://www.whatever.com/something?json=%7B%0A%20%20%20%22Ids%22%3A%20%5B16036%2C1%5D%0A%7D");
+                const string responseData = "I am not some Html.";
+                var messageResponse = FakeHttpMessageHandler.GetStringHttpResponseMessage(responseData);
+                var options = new HttpMessageOptions
+                {
+                    HttpResponseMessage = messageResponse
+                };
+                var messageHandler = new FakeHttpMessageHandler(options);
+
+                HttpResponseMessage message;
+                string content;
+                using (var httpClient = HttpClientFactory.GetHttpClient(messageHandler))
+                {
+                    // Act.
+                    message = await httpClient.GetAsync(requestUri);
+                    content = await message.Content.ReadAsStringAsync();
+                }
+
+                // Assert.
+                message.StatusCode.ShouldBe(HttpStatusCode.OK);
+                content.ShouldBe(responseData);
+            }
         }
 
         public class AddMessageFacts

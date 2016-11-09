@@ -5,12 +5,14 @@ namespace WorldDomination.Net.Http
 {
     public class HttpMessageOptions
     {
-        private const string NoValue = "*";
+        public const string NoValue = "*";
         private HttpContent _httpContent;
-        private string _httpContentSerialized = NoValue;
-        private HttpMethod _httpMethod = HttpMethod.Get;
+        private string _httpContentSerialized;
         private string _requestUri = NoValue;
 
+        /// <summary>
+        /// Required: End url we are targetting.
+        /// </summary>
         public string RequestUri
         {
             get { return _requestUri; }
@@ -26,23 +28,19 @@ namespace WorldDomination.Net.Http
             }
         }
 
-        public HttpMethod HttpMethod
-        {
-            get { return _httpMethod; }
-            set
-            {
-                if (value == null)
-                {
-                    throw new ArgumentNullException(nameof(value),
-                        "HttpMethod cannot be null. Please choose a valid HttpMethod.");
-                }
+        /// <summary>
+        /// Optional: If not provided, then assumed to be *any* method.
+        /// </summary>
+        public HttpMethod HttpMethod { get; set; }
 
-                _httpMethod = value;
-            }
-        }
-
+        /// <summary>
+        /// Required: Need to know what type of response we will return.
+        /// </summary>
         public HttpResponseMessage HttpResponseMessage { get; set; }
 
+        /// <summary>
+        /// Optional: If not provided, then assumed to be *no* content.
+        /// </summary>
         public HttpContent HttpContent
         {
             get { return _httpContent; }
@@ -53,19 +51,11 @@ namespace WorldDomination.Net.Http
             }
         }
 
-        public string UniqueKey
-        {
-            get
-            {
-                var httpMethodText = HttpMethod?.ToString() ?? NoValue;
-                return $"{RequestUri}||{_httpContentSerialized}||{httpMethodText}";
-            }
-        }
-
         public override string ToString()
         {
             var httpMethodText = HttpMethod?.ToString() ?? NoValue;
-            return $"{httpMethodText} {RequestUri}{(HttpContent != null ? $" body/content: {_httpContentSerialized}" : "")}";
+            return
+                $"{httpMethodText} {RequestUri}{(HttpContent != null ? $" body/content: {_httpContentSerialized}" : "")}";
         }
     }
 }
