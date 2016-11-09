@@ -65,7 +65,7 @@
   <ItemGroup>
     <Compile Include="FakeMessageHandlerFacts.cs" />
     <Compile Include="IntegrationFacts.cs" />
-    <Compile Include="PostAsyncTests.cs" />
+    <Compile Include="SendAsyncTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
