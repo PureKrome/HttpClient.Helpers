@@ -123,8 +123,41 @@ namespace WorldDomination.HttpClient.Helpers.Tests
             var fakeHttpMessageHandler = new FakeHttpMessageHandler(option);
 
             await DoGetAsync(RequestUri,
-                ExpectedContent,
-                fakeHttpMessageHandler);
+                             ExpectedContent,
+                             fakeHttpMessageHandler);
+        }
+
+        [Theory]
+        [MemberData(nameof(ValidSomeHttpMessageOptions))]
+        public async Task GivenSomeHttpMessageOptions_GetAsync_ReturnsAFakeResponse(IEnumerable<HttpMessageOptions> lotsOfOption)
+        {
+            var fakeHttpMessageHandler = new FakeHttpMessageHandler(lotsOfOption);
+
+            await DoGetAsync(RequestUri,
+                             ExpectedContent,
+                             fakeHttpMessageHandler);
+        }
+
+        private static async Task DoGetAsync(string requestUri,
+                                             string expectedResponseContent,
+                                             FakeHttpMessageHandler fakeHttpMessageHandler)
+        {
+            requestUri.ShouldNotBeNullOrWhiteSpace();
+            expectedResponseContent.ShouldNotBeNullOrWhiteSpace();
+            fakeHttpMessageHandler.ShouldNotBeNull();
+
+            HttpResponseMessage message;
+            string content;
+            using (var httpClient = new System.Net.Http.HttpClient(fakeHttpMessageHandler))
+            {
+                // Act.
+                message = await httpClient.GetAsync(requestUri);
+                content = await message.Content.ReadAsStringAsync();
+            }
+
+            // Assert.
+            message.StatusCode.ShouldBe(HttpStatusCode.OK);
+            content.ShouldBe(expectedResponseContent);
         }
 
         [Fact]
@@ -134,8 +167,8 @@ namespace WorldDomination.HttpClient.Helpers.Tests
             var fakeHttpMessageHandler = new FakeHttpMessageHandler(httpResponseMessage);
 
             await DoGetAsync(RequestUri,
-                ExpectedContent,
-                fakeHttpMessageHandler);
+                             ExpectedContent,
+                             fakeHttpMessageHandler);
         }
 
         [Fact]
@@ -163,42 +196,8 @@ namespace WorldDomination.HttpClient.Helpers.Tests
             var fakeHttpMessageHandler = new FakeHttpMessageHandler(messageResponses);
 
             await DoGetAsync(RequestUri,
-                ExpectedContent,
-                fakeHttpMessageHandler);
+                             ExpectedContent,
+                             fakeHttpMessageHandler);
         }
-
-        [Theory]
-        [MemberData(nameof(ValidSomeHttpMessageOptions))]
-        public async Task GivenSomeHttpMessageOptions_GetAsync_ReturnsAFakeResponse(IEnumerable<HttpMessageOptions> lotsOfOption)
-        {
-            var fakeHttpMessageHandler = new FakeHttpMessageHandler(lotsOfOption);
-
-            await DoGetAsync(RequestUri,
-                ExpectedContent,
-                fakeHttpMessageHandler);
-        }
-
-        private static async Task DoGetAsync(string requestUri,
-            string expectedResponseContent,
-            FakeHttpMessageHandler fakeHttpMessageHandler)
-        {
-            requestUri.ShouldNotBeNullOrWhiteSpace();
-            expectedResponseContent.ShouldNotBeNullOrWhiteSpace();
-            fakeHttpMessageHandler.ShouldNotBeNull();
-
-            HttpResponseMessage message;
-            string content;
-            using (var httpClient = new System.Net.Http.HttpClient(fakeHttpMessageHandler))
-            {
-                // Act.
-                message = await httpClient.GetAsync(requestUri);
-                content = await message.Content.ReadAsStringAsync();
-            }
-
-            // Assert.
-            message.StatusCode.ShouldBe(HttpStatusCode.OK);
-            content.ShouldBe(expectedResponseContent);
-        }
-        
     }
 }

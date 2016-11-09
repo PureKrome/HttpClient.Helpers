@@ -13,8 +13,7 @@ namespace WorldDomination.Net.Http
     {
         private readonly HttpRequestException _exception;
 
-        private readonly IDictionary<string, HttpMessageOptions> _lotsOfOptions =
-            new Dictionary<string, HttpMessageOptions>();
+        private readonly IDictionary<string, HttpMessageOptions> _lotsOfOptions = new Dictionary<string, HttpMessageOptions>();
 
 
         /// <summary>
@@ -23,12 +22,13 @@ namespace WorldDomination.Net.Http
         /// <remarks>This is mainly used for unit testing purposes.</remarks>
         /// <param name="requestUri">The endpoint the HttpClient would normally try and connect to.</param>
         /// <param name="httpResponseMessage">The faked response message.</param>
-        public FakeHttpMessageHandler(string requestUri, HttpResponseMessage httpResponseMessage)
+        public FakeHttpMessageHandler(string requestUri,
+                                      HttpResponseMessage httpResponseMessage)
             : this(new HttpMessageOptions
-            {
-                RequestUri = requestUri,
-                HttpResponseMessage = httpResponseMessage
-            })
+                   {
+                       RequestUri = requestUri,
+                       HttpResponseMessage = httpResponseMessage
+                   })
         {
         }
 
@@ -51,7 +51,10 @@ namespace WorldDomination.Net.Http
 
         //    _responses = httpResponseMessages;
         //}
-        public FakeHttpMessageHandler(HttpMessageOptions options) : this(new List<HttpMessageOptions> {options})
+        public FakeHttpMessageHandler(HttpMessageOptions options) : this(new List<HttpMessageOptions>
+                                                                         {
+                                                                             options
+                                                                         })
         {
         }
 
@@ -69,11 +72,11 @@ namespace WorldDomination.Net.Http
 
             // NOTE: We assume HttpGet is the default when none are provided in this 'shortcut' method.
             var lotsOfOptions = responses.Select(item => new HttpMessageOptions
-            {
-                RequestUri = item.Key,
-                HttpResponseMessage = item.Value,
-                HttpMethod = HttpMethod.Get
-            }).ToArray();
+                                                 {
+                                                     RequestUri = item.Key,
+                                                     HttpResponseMessage = item.Value,
+                                                     HttpMethod = HttpMethod.Get
+                                                 }).ToArray();
 
             Initialize(lotsOfOptions);
         }
@@ -90,9 +93,9 @@ namespace WorldDomination.Net.Http
         /// <param name="httpResponseMessage">The faked response message.</param>
         public FakeHttpMessageHandler(HttpResponseMessage httpResponseMessage)
             : this(new HttpMessageOptions
-            {
-                HttpResponseMessage = httpResponseMessage
-            })
+                   {
+                       HttpResponseMessage = httpResponseMessage
+                   })
         {
         }
 
@@ -118,7 +121,7 @@ namespace WorldDomination.Net.Http
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
-            CancellationToken cancellationToken)
+                                                               CancellationToken cancellationToken)
         {
             if (_exception != null)
             {
@@ -154,8 +157,8 @@ namespace WorldDomination.Net.Http
         /// Helper method to easily return a simple HttpResponseMessage.
         /// </summary>
         public static HttpResponseMessage GetStringHttpResponseMessage(string content,
-            HttpStatusCode httpStatusCode = HttpStatusCode.OK,
-            string mediaType = "application/json")
+                                                                       HttpStatusCode httpStatusCode = HttpStatusCode.OK,
+                                                                       string mediaType = "application/json")
         {
             return new HttpResponseMessage
             {
@@ -174,7 +177,7 @@ namespace WorldDomination.Net.Http
             if (!lotsOfOptions.Any())
             {
                 throw new ArgumentOutOfRangeException(nameof(lotsOfOptions),
-                    "Need at least _one_ expected request/response (a.k.a. HttpMessageOptions) setup.");
+                                                      "Need at least _one_ expected request/response (a.k.a. HttpMessageOptions) setup.");
             }
 
             // We need to make sure the requests are unique.

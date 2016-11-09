@@ -21,7 +21,7 @@ namespace WorldDomination.Net.Http
                 if (string.IsNullOrWhiteSpace(value))
                 {
                     throw new ArgumentNullException(nameof(value),
-                        "RequestUri cannot be null/empty/whitespace. Please choose a valid RequestUri.");
+                                                    "RequestUri cannot be null/empty/whitespace. Please choose a valid RequestUri.");
                 }
 
                 _requestUri = value;

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Shouldly;
 using WorldDomination.Net.Http;
 using Xunit;
+
 // ReSharper disable ConsiderUsingConfigureAwait
 
 namespace WorldDomination.HttpClient.Helpers.Tests
@@ -27,10 +28,10 @@ namespace WorldDomination.HttpClient.Helpers.Tests
                 {
                     // Form key/values.
                     new FormUrlEncodedContent(new[]
-                    {
-                        new KeyValuePair<string, string>("a", "b"),
-                        new KeyValuePair<string, string>("c", "1")
-                    })
+                                              {
+                                                  new KeyValuePair<string, string>("a", "b"),
+                                                  new KeyValuePair<string, string>("c", "1")
+                                              })
                 };
             }
         }
@@ -50,14 +51,14 @@ namespace WorldDomination.HttpClient.Helpers.Tests
                 {
                     // Form key/values.
                     new FormUrlEncodedContent(new[]
-                    {
-                        new KeyValuePair<string, string>("a", "b"),
-                        new KeyValuePair<string, string>("c", "1")
-                    }),
+                                              {
+                                                  new KeyValuePair<string, string>("a", "b"),
+                                                  new KeyValuePair<string, string>("c", "1")
+                                              }),
                     new FormUrlEncodedContent(new[]
-                    {
-                        new KeyValuePair<string, string>("2", "1")
-                    })
+                                              {
+                                                  new KeyValuePair<string, string>("2", "1")
+                                              })
                 };
             }
         }
@@ -99,7 +100,7 @@ namespace WorldDomination.HttpClient.Helpers.Tests
         [Theory]
         [MemberData(nameof(InvalidPostHttpContent))]
         public async Task GivenAPostRequestWithIncorrectlySetupOptions_PostAsync_ThrowsAnException(HttpContent expectedHttpContent,
-            HttpContent sentHttpContent)
+                                                                                                   HttpContent sentHttpContent)
         {
             // Arrange.
             const string responseContent = "hi";
@@ -119,7 +120,10 @@ namespace WorldDomination.HttpClient.Helpers.Tests
             using (var httpClient = new System.Net.Http.HttpClient(messageHandler))
             {
                 // Act.
-                exception = await Should.ThrowAsync<InvalidOperationException>(async () => await httpClient.PostAsync("http://www.something.com/some/website", sentHttpContent));
+                exception =
+                    await
+                        Should.ThrowAsync<InvalidOperationException>(
+                            async () => await httpClient.PostAsync("http://www.something.com/some/website", sentHttpContent));
             }
 
             // Assert.

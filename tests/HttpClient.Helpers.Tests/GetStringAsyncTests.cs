@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using Shouldly;
 using WorldDomination.Net.Http;
 using Xunit;
+
 // ReSharper disable ConsiderUsingConfigureAwait
 
 namespace WorldDomination.HttpClient.Helpers.Tests
@@ -36,7 +33,7 @@ namespace WorldDomination.HttpClient.Helpers.Tests
             using (var httpClient = new System.Net.Http.HttpClient(messageHandler))
             {
                 // Act.
-                content= await httpClient.GetStringAsync(requestUri);
+                content = await httpClient.GetStringAsync(requestUri);
             }
 
             // Assert.
