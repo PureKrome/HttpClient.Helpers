@@ -5,8 +5,11 @@ namespace WorldDomination.Net.Http
 {
     public class HttpMessageOptions
     {
+        private const string NoValue = "*";
+        private HttpContent _httpContent;
+        private string _httpContentSerialized = NoValue;
         private HttpMethod _httpMethod = HttpMethod.Get;
-        private string _requestUri = "*";
+        private string _requestUri = NoValue;
 
         public string RequestUri
         {
@@ -40,10 +43,29 @@ namespace WorldDomination.Net.Http
 
         public HttpResponseMessage HttpResponseMessage { get; set; }
 
+        public HttpContent HttpContent
+        {
+            get { return _httpContent; }
+            set
+            {
+                _httpContent = value;
+                _httpContentSerialized = _httpContent?.ReadAsStringAsync().Result ?? NoValue;
+            }
+        }
+
+        public string UniqueKey
+        {
+            get
+            {
+                var httpMethodText = HttpMethod?.ToString() ?? NoValue;
+                return $"{RequestUri}||{_httpContentSerialized}||{httpMethodText}";
+            }
+        }
+
         public override string ToString()
         {
-            var httpMethodText = HttpMethod?.ToString() ?? "*";
-            return $"{httpMethodText} {RequestUri}";
+            var httpMethodText = HttpMethod?.ToString() ?? NoValue;
+            return $"{httpMethodText} {RequestUri}{(HttpContent != null ? $" body/content: {_httpContentSerialized}" : "")}";
         }
     }
 }

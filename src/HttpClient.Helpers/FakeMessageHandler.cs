@@ -127,9 +127,21 @@ namespace WorldDomination.Net.Http
             HttpMessageOptions options;
             var requestUri = request.RequestUri.AbsoluteUri;
 
-            // If we don't care 
-            var uniqueKey = CreateDictionaryKey(requestUri, request.Method);
-            var wildcardKey = CreateDictionaryKey("*", HttpMethod.Get);
+            // If we don't care .
+            var option = new HttpMessageOptions
+            {
+                RequestUri = requestUri,
+                HttpMethod = request.Method,
+                HttpContent = request.Content
+            };
+            var uniqueKey = option.UniqueKey;
+
+            var wildcardOption = new HttpMessageOptions
+            {
+                RequestUri = "*",
+                HttpMethod = HttpMethod.Get
+            };
+            var wildcardKey = wildcardOption.UniqueKey;
 
             // Determine the Response message based upon the Request uri && HttpMethod.
             // 1. Exact match.
@@ -193,15 +205,9 @@ namespace WorldDomination.Net.Http
 
             foreach (var option in lotsOfOptions)
             {
-                var key = CreateDictionaryKey(option.RequestUri, option.HttpMethod);
+                var key = option.UniqueKey;
                 _lotsOfOptions[key] = option;
             }
-        }
-
-        private static string CreateDictionaryKey(string requestUri, HttpMethod httpMethod)
-        {
-            var httpMethodText = httpMethod?.ToString() ?? "*";
-            return $"{requestUri}||{httpMethodText}";
         }
     }
 }
