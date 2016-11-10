@@ -5,9 +5,14 @@ namespace WorldDomination.Net.Http
 {
     public class HttpMessageOptions
     {
-        private HttpMethod _httpMethod = HttpMethod.Get;
-        private string _requestUri = "*";
+        public const string NoValue = "*";
+        private HttpContent _httpContent;
+        private string _httpContentSerialized;
+        private string _requestUri = NoValue;
 
+        /// <summary>
+        /// Required: End url we are targetting.
+        /// </summary>
         public string RequestUri
         {
             get { return _requestUri; }
@@ -16,34 +21,41 @@ namespace WorldDomination.Net.Http
                 if (string.IsNullOrWhiteSpace(value))
                 {
                     throw new ArgumentNullException(nameof(value),
-                        "RequestUri cannot be null/empty/whitespace. Please choose a valid RequestUri.");
+                                                    "RequestUri cannot be null/empty/whitespace. Please choose a valid RequestUri.");
                 }
 
                 _requestUri = value;
             }
         }
 
-        public HttpMethod HttpMethod
+        /// <summary>
+        /// Optional: If not provided, then assumed to be *any* method.
+        /// </summary>
+        public HttpMethod HttpMethod { get; set; }
+
+        /// <summary>
+        /// Required: Need to know what type of response we will return.
+        /// </summary>
+        public HttpResponseMessage HttpResponseMessage { get; set; }
+
+        /// <summary>
+        /// Optional: If not provided, then assumed to be *no* content.
+        /// </summary>
+        public HttpContent HttpContent
         {
-            get { return _httpMethod; }
+            get { return _httpContent; }
             set
             {
-                if (value == null)
-                {
-                    throw new ArgumentNullException(nameof(value),
-                        "HttpMethod cannot be null. Please choose a valid HttpMethod.");
-                }
-
-                _httpMethod = value;
+                _httpContent = value;
+                _httpContentSerialized = _httpContent?.ReadAsStringAsync().Result ?? NoValue;
             }
         }
 
-        public HttpResponseMessage HttpResponseMessage { get; set; }
-
         public override string ToString()
         {
-            var httpMethodText = HttpMethod?.ToString() ?? "*";
-            return $"{httpMethodText} {RequestUri}";
+            var httpMethodText = HttpMethod?.ToString() ?? NoValue;
+            return
+                $"{httpMethodText} {RequestUri}{(HttpContent != null ? $" body/content: {_httpContentSerialized}" : "")}";
         }
     }
 }

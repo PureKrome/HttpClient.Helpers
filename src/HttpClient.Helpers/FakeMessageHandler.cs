@@ -13,8 +13,8 @@ namespace WorldDomination.Net.Http
     {
         private readonly HttpRequestException _exception;
 
-        private readonly IDictionary<string, HttpMessageOptions> _lotsOfOptions =
-            new Dictionary<string, HttpMessageOptions>();
+        private readonly IDictionary<string, HttpMessageOptions> _lotsOfOptions = new Dictionary<string, HttpMessageOptions>();
+
 
         /// <summary>
         /// A fake message handler.
@@ -22,12 +22,13 @@ namespace WorldDomination.Net.Http
         /// <remarks>This is mainly used for unit testing purposes.</remarks>
         /// <param name="requestUri">The endpoint the HttpClient would normally try and connect to.</param>
         /// <param name="httpResponseMessage">The faked response message.</param>
-        public FakeHttpMessageHandler(string requestUri, HttpResponseMessage httpResponseMessage)
+        public FakeHttpMessageHandler(string requestUri,
+                                      HttpResponseMessage httpResponseMessage)
             : this(new HttpMessageOptions
-            {
-                RequestUri = requestUri,
-                HttpResponseMessage = httpResponseMessage
-            })
+                   {
+                       RequestUri = requestUri,
+                       HttpResponseMessage = httpResponseMessage
+                   })
         {
         }
 
@@ -50,7 +51,10 @@ namespace WorldDomination.Net.Http
 
         //    _responses = httpResponseMessages;
         //}
-        public FakeHttpMessageHandler(HttpMessageOptions options) : this(new List<HttpMessageOptions> {options})
+        public FakeHttpMessageHandler(HttpMessageOptions options) : this(new List<HttpMessageOptions>
+                                                                         {
+                                                                             options
+                                                                         })
         {
         }
 
@@ -66,13 +70,15 @@ namespace WorldDomination.Net.Http
                 throw new ArgumentOutOfRangeException(nameof(responses));
             }
 
-            var options = responses.Select(item => new HttpMessageOptions
-            {
-                RequestUri = item.Key,
-                HttpResponseMessage = item.Value
-            });
+            // NOTE: We assume HttpGet is the default when none are provided in this 'shortcut' method.
+            var lotsOfOptions = responses.Select(item => new HttpMessageOptions
+                                                 {
+                                                     RequestUri = item.Key,
+                                                     HttpResponseMessage = item.Value,
+                                                     HttpMethod = HttpMethod.Get
+                                                 }).ToArray();
 
-            Initialize(options.ToArray());
+            Initialize(lotsOfOptions);
         }
 
         public FakeHttpMessageHandler(IEnumerable<HttpMessageOptions> lotsOfOptions)
@@ -87,9 +93,9 @@ namespace WorldDomination.Net.Http
         /// <param name="httpResponseMessage">The faked response message.</param>
         public FakeHttpMessageHandler(HttpResponseMessage httpResponseMessage)
             : this(new HttpMessageOptions
-            {
-                HttpResponseMessage = httpResponseMessage
-            })
+                   {
+                       HttpResponseMessage = httpResponseMessage
+                   })
         {
         }
 
@@ -115,7 +121,7 @@ namespace WorldDomination.Net.Http
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
-            CancellationToken cancellationToken)
+                                                               CancellationToken cancellationToken)
         {
             if (_exception != null)
             {
@@ -124,44 +130,26 @@ namespace WorldDomination.Net.Http
 
             var tcs = new TaskCompletionSource<HttpResponseMessage>();
 
-            HttpMessageOptions options;
             var requestUri = request.RequestUri.AbsoluteUri;
-
-            // If we don't care 
-            var uniqueKey = CreateDictionaryKey(requestUri, request.Method);
-            var wildcardKey = CreateDictionaryKey("*", HttpMethod.Get);
-
-            // Determine the Response message based upon the Request uri && HttpMethod.
-            // 1. Exact match.
-            // 2. Wildcard '*' == I don't care what the Uri is, just use this Response.
-            // 3. Starts with == this is so we don't have to have a huge string in our test case. Just keeping code a bit cleaner.
-
-            // 1) & 3) checks.
-            if (!_lotsOfOptions.TryGetValue(uniqueKey, out options) &&
-                !_lotsOfOptions.TryGetValue(wildcardKey, out options))
+            var option = new HttpMessageOptions
             {
-                // 2) Starts-with check.
-                foreach (var key in _lotsOfOptions.Keys.Where(uniqueKey.StartsWith))
-                {
-                    options = _lotsOfOptions[key];
-                    break;
-                }
+                RequestUri = requestUri,
+                HttpMethod = request.Method,
+                HttpContent = request.Content
+            };
 
-                if (options == null)
-                {
-                    // Nope - no keys found exactly OR starting-with...
+            var expectedOption = GetExpectedOption(option);
+            if (expectedOption == null)
+            {
+                // Nope - no keys found exactly OR starting-with...
 
-                    var responsesText = !_lotsOfOptions.Any()
-                        ? "-none-"
-                        : string.Join(";", _lotsOfOptions.Values);
-
-                    var errorMessage =
-                        $"No HttpResponseMessage found for the Request Uri: {request.RequestUri}. Please provide one in the FakeHttpMessageHandler constructor Or use a '*' for any request uri. Search-Key: '{requestUri}. Setup: {(!_lotsOfOptions.Any() ? "- no responses -" : _lotsOfOptions.Count.ToString())} responses: {responsesText}";
-                    throw new InvalidOperationException(errorMessage);
-                }
+                var responsesText = string.Join(";", _lotsOfOptions.Values);
+                var errorMessage =
+                    $"No HttpResponseMessage found for the Request Uri: {request.RequestUri}. Please provide one in the FakeHttpMessageHandler constructor Or use a '*' for any request uri. Search-Key: '{requestUri}. Setup: {(!_lotsOfOptions.Any() ? "- no responses -" : _lotsOfOptions.Count.ToString())} responses: {responsesText}";
+                throw new InvalidOperationException(errorMessage);
             }
 
-            tcs.SetResult(options.HttpResponseMessage);
+            tcs.SetResult(expectedOption.HttpResponseMessage);
             return tcs.Task;
         }
 
@@ -169,8 +157,8 @@ namespace WorldDomination.Net.Http
         /// Helper method to easily return a simple HttpResponseMessage.
         /// </summary>
         public static HttpResponseMessage GetStringHttpResponseMessage(string content,
-            HttpStatusCode httpStatusCode = HttpStatusCode.OK,
-            string mediaType = "application/json")
+                                                                       HttpStatusCode httpStatusCode = HttpStatusCode.OK,
+                                                                       string mediaType = "application/json")
         {
             return new HttpResponseMessage
             {
@@ -179,7 +167,7 @@ namespace WorldDomination.Net.Http
             };
         }
 
-        private void Initialize(ICollection<HttpMessageOptions> lotsOfOptions)
+        private void Initialize(HttpMessageOptions[] lotsOfOptions)
         {
             if (lotsOfOptions == null)
             {
@@ -188,20 +176,36 @@ namespace WorldDomination.Net.Http
 
             if (!lotsOfOptions.Any())
             {
-                throw new ArgumentOutOfRangeException(nameof(lotsOfOptions));
+                throw new ArgumentOutOfRangeException(nameof(lotsOfOptions),
+                                                      "Need at least _one_ expected request/response (a.k.a. HttpMessageOptions) setup.");
             }
 
+            // We need to make sure the requests are unique.
             foreach (var option in lotsOfOptions)
             {
-                var key = CreateDictionaryKey(option.RequestUri, option.HttpMethod);
-                _lotsOfOptions[key] = option;
+                if (_lotsOfOptions.ContainsKey(option.ToString()))
+                {
+                    throw new InvalidOperationException(
+                        $"Trying to add a request/response (a.k.a. HttpMessageOptions) which has already been setup. Can only have one unique request/response, setup. Unique info: {option}");
+                }
+
+                _lotsOfOptions.Add(option.ToString(), option);
             }
         }
 
-        private static string CreateDictionaryKey(string requestUri, HttpMethod httpMethod)
+        private HttpMessageOptions GetExpectedOption(HttpMessageOptions option)
         {
-            var httpMethodText = httpMethod?.ToString() ?? "*";
-            return $"{requestUri}||{httpMethodText}";
+            if (option == null)
+            {
+                throw new ArgumentNullException(nameof(option));
+            }
+
+            return _lotsOfOptions.Values.SingleOrDefault(x => (x.RequestUri == option.RequestUri ||
+                                                               x.RequestUri == HttpMessageOptions.NoValue) &&
+                                                              (x.HttpMethod == option.HttpMethod ||
+                                                               x.HttpMethod == null) &&
+                                                              (x.HttpContent == option.HttpContent ||
+                                                               x.HttpContent == null));
         }
     }
 }
