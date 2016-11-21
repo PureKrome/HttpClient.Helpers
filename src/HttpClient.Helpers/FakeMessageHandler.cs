@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -149,6 +150,9 @@ namespace WorldDomination.Net.Http
                 throw new InvalidOperationException(errorMessage);
             }
 
+            // Increment the number of times this option had been 'called'.
+            IncrementCalls(expectedOption);
+
             tcs.SetResult(expectedOption.HttpResponseMessage);
             return tcs.Task;
         }
@@ -206,6 +210,24 @@ namespace WorldDomination.Net.Http
                                                                x.HttpMethod == null) &&
                                                               (x.HttpContent == option.HttpContent ||
                                                                x.HttpContent == null));
+        }
+
+        private static void IncrementCalls(HttpMessageOptions options)
+        {
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            var type = typeof(HttpMessageOptions);
+            var propertyInfo = type.GetProperty("NumberOfTimesCalled");
+            if (propertyInfo == null)
+            {
+                return;
+            }
+
+            var existingValue = (int) propertyInfo.GetValue(options);
+            propertyInfo.SetValue(options, ++existingValue);
         }
     }
 }
