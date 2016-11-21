@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -138,28 +139,6 @@ namespace WorldDomination.HttpClient.Helpers.Tests
                              fakeHttpMessageHandler);
         }
 
-        private static async Task DoGetAsync(string requestUri,
-                                             string expectedResponseContent,
-                                             FakeHttpMessageHandler fakeHttpMessageHandler)
-        {
-            requestUri.ShouldNotBeNullOrWhiteSpace();
-            expectedResponseContent.ShouldNotBeNullOrWhiteSpace();
-            fakeHttpMessageHandler.ShouldNotBeNull();
-
-            HttpResponseMessage message;
-            string content;
-            using (var httpClient = new System.Net.Http.HttpClient(fakeHttpMessageHandler))
-            {
-                // Act.
-                message = await httpClient.GetAsync(requestUri);
-                content = await message.Content.ReadAsStringAsync();
-            }
-
-            // Assert.
-            message.StatusCode.ShouldBe(HttpStatusCode.OK);
-            content.ShouldBe(expectedResponseContent);
-        }
-
         [Fact]
         public async Task GivenAnHttpResponseMessage_GetAsync_ReturnsAFakeResponse()
         {
@@ -198,6 +177,66 @@ namespace WorldDomination.HttpClient.Helpers.Tests
             await DoGetAsync(RequestUri,
                              ExpectedContent,
                              fakeHttpMessageHandler);
+        }
+
+        [Fact]
+        public async Task GivenAnUnauthorisedStatusCodeResponse_GetAsync_ReturnsAFakeResponseWithAnUnauthorisedStatusCode()
+        {
+            // Arrange.
+            var messageResponse = FakeHttpMessageHandler.GetStringHttpResponseMessage("pew pew", HttpStatusCode.Unauthorized);
+            var messageHandler = new FakeHttpMessageHandler(RequestUri, messageResponse);
+
+            HttpResponseMessage message;
+            using (var httpClient = new System.Net.Http.HttpClient(messageHandler))
+            {
+                // Act.
+                message = await httpClient.GetAsync(RequestUri);
+            }
+
+            // Assert.
+            message.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
+        }
+
+        [Fact]
+        public async Task GivenAValidHttpRequest_GetSomeDataAsync_ReturnsAFoo()
+        {
+            // Arrange.
+            const string errorMessage = "Oh man - something bad happened.";
+            var expectedException = new HttpRequestException(errorMessage);
+            var messageHandler = new FakeHttpMessageHandler(expectedException);
+
+            Exception exception;
+            using (var httpClient = new System.Net.Http.HttpClient(messageHandler))
+            {
+                // Act.
+                // NOTE: network traffic will not leave your computer because you've faked the response, above.
+                exception = await Should.ThrowAsync<HttpRequestException>(async () => await httpClient.GetAsync(RequestUri));
+            }
+
+            // Assert.
+            exception.Message.ShouldBe(errorMessage);
+        }
+
+        private static async Task DoGetAsync(string requestUri,
+                                             string expectedResponseContent,
+                                             FakeHttpMessageHandler fakeHttpMessageHandler)
+        {
+            requestUri.ShouldNotBeNullOrWhiteSpace();
+            expectedResponseContent.ShouldNotBeNullOrWhiteSpace();
+            fakeHttpMessageHandler.ShouldNotBeNull();
+
+            HttpResponseMessage message;
+            string content;
+            using (var httpClient = new System.Net.Http.HttpClient(fakeHttpMessageHandler))
+            {
+                // Act.
+                message = await httpClient.GetAsync(requestUri);
+                content = await message.Content.ReadAsStringAsync();
+            }
+
+            // Assert.
+            message.StatusCode.ShouldBe(HttpStatusCode.OK);
+            content.ShouldBe(expectedResponseContent);
         }
     }
 }

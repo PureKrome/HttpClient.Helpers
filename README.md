@@ -1,4 +1,4 @@
-#HttpClient.Helpers
+# HttpClient.Helpers
 
 | Stage       | CI | NuGet |
 |-------------|----|-------|
@@ -11,6 +11,12 @@ Code that uses `System.Net.Http.HttpClient` will attempt to actually call/hit th
 
 To prevent this from happening in a *unit* test, some simple helpers are provided in this code library.
 
+## Key Points
+- Use Dependency Injection to hijack your request (this library makes it _supa dupa easy_ to do this)
+- Works with GET/POST/etc.
+- Can provide wildcards (i.e. I don't care about the Request endpoint or the request HTTP Method, etc)
+- Can provide multiple endpoints and see handle what is returned based on the particular request.
+- Can be used to test network errors during transmission. i.e. can test when the HttpClient throws an exception because of .. well ... :boom:
 -----
 
 ## Installation
@@ -22,70 +28,12 @@ CLI: `install-package WorldDomination.HttpClient.Helpers`
 
 
 ## Sample Code
-This sample uses the Factory and a Key. The other option is to use [constructor injection with a `FakeHttpMessageHandler` parameter](https://github.com/PureKrome/HttpClient.Helpers/wiki/Constructor-Injection).
-
-```C#
-public class MyService : IMyService
-{
-    public const string SomeKey = "pewpew";
-    
-    public async Task<Foo> GetSomeDataAsync()
-    {
-        HttpResponseMessage message;
-        string content;
-        
-        // ** NOTE: We use the HttpClientFactory, making it easy to unit test this code.
-        using (var httpClient = HttpClientFactory.GetHttpClient(SomeKey))
-        {
-            message = await httpClient.GetAsync("http://www.something.com/some/website");
-            content = await message.Content.ReadAsStringAsync();
-        }
-        
-        if (message.StatusCode != HttpStatusCode.OK)
-        { 
-            // TODO: handle this ru-roh-error.
-        }
-        
-        // Assumption: content is in a json format.
-        var foo = JsonConvert.Deserialize<Foo>(content);
-        
-        return foo;
-    }
-}
-
-// ... and a unit test ...
-
-[Fact]
-public async Task GivenAValidHttpRequest_GetSomeDataAsync_ReturnsAFoo()
-{
-    // Arrange.
-    const string requestUrl = "http://www.something.com/some/website";  
-    const string responseData = "I am not some Html.";
-    var myService = new MyService();
-
-    // 1. Fake response.  
-    var messageResponse = FakeHttpMessageHandler.GetStringHttpResponseMessage(responseData);  
-
-    // 2. Fake handler that says: for this Url, return this (fake) response.  
-    var messageHandler = new FakeHttpMessageHandler(requestUrl, messageResponse);
-    
-    // 3. Add this message handler to the factory, for the specific key.
-    HttpClientFactory.AddMessageHandler(messageHandler, MyService.SomeKey);
-    
-    // Act.
-    // NOTE: network traffic will not leave your computer because you've faked the response, above.
-    var result = myService.GetSomeDataAsync();
-    
-    // Assert.
-    result.Id.ShouldBe(69);
-}
-```
 
 There's [plenty more examples](https://github.com/PureKrome/HttpClient.Helpers/wiki) about to wire up:
-
- - [Multiple endpoints](https://github.com/PureKrome/HttpClient.Helpers/wiki/Multiple-endpoints) at once
- - [Wildcard endpoints](https://github.com/PureKrome/HttpClient.Helpers/wiki/Wildcard-endpoints)
- - [Throwing exceptions](https://github.com/PureKrome/HttpClient.Helpers/wiki/Faking-an-Exception) and handling it
+- [A really simple example](https://github.com/PureKrome/HttpClient.Helpers/wiki/Constructor-Injection)
+- [Multiple endpoints](https://github.com/PureKrome/HttpClient.Helpers/wiki/Multiple-endpoints) at once
+- [Wildcard endpoints](https://github.com/PureKrome/HttpClient.Helpers/wiki/Wildcard-endpoints)
+- [Throwing exceptions](https://github.com/PureKrome/HttpClient.Helpers/wiki/Faking-an-Exception) and handling it
 
 For all the samples, please [check out the Wiki page: Helper Examples](https://github.com/PureKrome/HttpClient.Helpers/wiki)
 
