@@ -20,22 +20,6 @@ namespace WorldDomination.Net.Http
         /// <summary>
         /// A fake message handler.
         /// </summary>
-        /// <remarks>This is mainly used for unit testing purposes.</remarks>
-        /// <param name="requestUri">The endpoint the HttpClient would normally try and connect to.</param>
-        /// <param name="httpResponseMessage">The faked response message.</param>
-        public FakeHttpMessageHandler(string requestUri,
-                                      HttpResponseMessage httpResponseMessage)
-            : this(new HttpMessageOptions
-                   {
-                       RequestUri = requestUri,
-                       HttpResponseMessage = httpResponseMessage
-                   })
-        {
-        }
-
-        /// <summary>
-        /// A fake message handler.
-        /// </summary>
         /// <remarks>TIP: If you have a requestUri = "*", this is a catch-all ... so if none of the other requestUri's match, then it will fall back to this dictionary item.</remarks>
         ///// <param name="httpResponseMessages">A dictionary of request endpoints and their respective fake response message.</param>
         //public FakeHttpMessageHandler(IDictionary<string, HttpResponseMessage> httpResponseMessages)
@@ -59,45 +43,9 @@ namespace WorldDomination.Net.Http
         {
         }
 
-        public FakeHttpMessageHandler(IDictionary<string, HttpResponseMessage> responses)
-        {
-            if (responses == null)
-            {
-                throw new ArgumentNullException(nameof(responses));
-            }
-
-            if (!responses.Any())
-            {
-                throw new ArgumentOutOfRangeException(nameof(responses));
-            }
-
-            // NOTE: We assume HttpGet is the default when none are provided in this 'shortcut' method.
-            var lotsOfOptions = responses.Select(item => new HttpMessageOptions
-                                                 {
-                                                     RequestUri = item.Key,
-                                                     HttpResponseMessage = item.Value,
-                                                     HttpMethod = HttpMethod.Get
-                                                 }).ToArray();
-
-            Initialize(lotsOfOptions);
-        }
-
         public FakeHttpMessageHandler(IEnumerable<HttpMessageOptions> lotsOfOptions)
         {
             Initialize(lotsOfOptions.ToArray());
-        }
-
-        /// <summary>
-        /// A fake message handler which ignores whatever endpoint you're trying to connect to.
-        /// </summary>
-        /// <remarks>This constructor doesn't care what the request endpoint it. So if you're code is trying to hit multuple endpoints, then it will always return the same response message.</remarks>
-        /// <param name="httpResponseMessage">The faked response message.</param>
-        public FakeHttpMessageHandler(HttpResponseMessage httpResponseMessage)
-            : this(new HttpMessageOptions
-                   {
-                       HttpResponseMessage = httpResponseMessage
-                   })
-        {
         }
 
         /// <summary>
