@@ -51,6 +51,8 @@ namespace WorldDomination.Net.Http
             }
         }
 
+        public int NumberOfTimesCalled { get; private set; }
+
         public override string ToString()
         {
             var httpMethodText = HttpMethod?.ToString() ?? NoValue;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -119,64 +120,90 @@ namespace WorldDomination.HttpClient.Helpers.Tests
 
         [Theory]
         [MemberData(nameof(ValidHttpMessageOptions))]
-        public async Task GivenAnHttpMessageOptions_GetAsync_ReturnsAFakeResponse(HttpMessageOptions option)
+        public async Task GivenAnHttpMessageOptions_GetAsync_ReturnsAFakeResponse(HttpMessageOptions options)
         {
-            var fakeHttpMessageHandler = new FakeHttpMessageHandler(option);
+            // Arrange.
+            var fakeHttpMessageHandler = new FakeHttpMessageHandler(options);
 
+            // Act & Assert.
             await DoGetAsync(RequestUri,
                              ExpectedContent,
                              fakeHttpMessageHandler);
+            options.NumberOfTimesCalled.ShouldBe(1);
         }
 
         [Theory]
         [MemberData(nameof(ValidSomeHttpMessageOptions))]
-        public async Task GivenSomeHttpMessageOptions_GetAsync_ReturnsAFakeResponse(IEnumerable<HttpMessageOptions> lotsOfOption)
+        public async Task GivenSomeHttpMessageOptions_GetAsync_ReturnsAFakeResponse(IList<HttpMessageOptions> lotsOfOptions)
         {
-            var fakeHttpMessageHandler = new FakeHttpMessageHandler(lotsOfOption);
+            // Arrange.
+            var fakeHttpMessageHandler = new FakeHttpMessageHandler(lotsOfOptions);
 
+            // Act & Assert.
             await DoGetAsync(RequestUri,
                              ExpectedContent,
                              fakeHttpMessageHandler);
+            lotsOfOptions.Sum(x => x.NumberOfTimesCalled).ShouldBe(1);
         }
 
         [Fact]
         public async Task GivenAnHttpResponseMessage_GetAsync_ReturnsAFakeResponse()
         {
+            // Arrange.
             var httpResponseMessage = FakeHttpMessageHandler.GetStringHttpResponseMessage(ExpectedContent);
-            var fakeHttpMessageHandler = new FakeHttpMessageHandler(httpResponseMessage);
+            var options = new HttpMessageOptions
+            {
+                HttpResponseMessage = httpResponseMessage
+            };
+            var fakeHttpMessageHandler = new FakeHttpMessageHandler(options);
 
+            // Act & Assert.
             await DoGetAsync(RequestUri,
                              ExpectedContent,
                              fakeHttpMessageHandler);
+            options.NumberOfTimesCalled.ShouldBe(1);
         }
 
         [Fact]
         public async Task GivenSomeHttpResponseMessages_GetAsync_ReturnsAFakeResponse()
         {
-            const string requestUrl1 = RequestUri;
-            const string responseData1 = ExpectedContent;
-            var messageResponse1 = FakeHttpMessageHandler.GetStringHttpResponseMessage(responseData1);
+            // Arrange.
+            var messageResponse1 = FakeHttpMessageHandler.GetStringHttpResponseMessage(ExpectedContent);
 
-            const string requestUrl2 = "http://www.something.com/another/site";
             const string responseData2 = "Html, I am not.";
             var messageResponse2 = FakeHttpMessageHandler.GetStringHttpResponseMessage(responseData2);
 
-            const string requestUrl3 = "http://www.whatever.com/";
             const string responseData3 = "<html><head><body>pew pew</body></head>";
             var messageResponse3 = FakeHttpMessageHandler.GetStringHttpResponseMessage(responseData3);
 
-            var messageResponses = new Dictionary<string, HttpResponseMessage>
+            var options = new List<HttpMessageOptions>
             {
-                {requestUrl1, messageResponse1},
-                {requestUrl2, messageResponse2},
-                {requestUrl3, messageResponse3}
+                new HttpMessageOptions
+                {
+                    RequestUri = RequestUri,
+                    HttpResponseMessage = messageResponse1
+                },
+                new HttpMessageOptions
+                {
+                    RequestUri = "http://www.something.com/another/site",
+                    HttpResponseMessage = messageResponse2
+                },
+                new HttpMessageOptions
+                {
+                    RequestUri = "http://www.whatever.com/",
+                    HttpResponseMessage = messageResponse3
+                },
             };
 
-            var fakeHttpMessageHandler = new FakeHttpMessageHandler(messageResponses);
+            var fakeHttpMessageHandler = new FakeHttpMessageHandler(options);
 
+            // Act & Assert.
             await DoGetAsync(RequestUri,
                              ExpectedContent,
                              fakeHttpMessageHandler);
+            options[0].NumberOfTimesCalled.ShouldBe(1);
+            options[1].NumberOfTimesCalled.ShouldBe(0);
+            options[2].NumberOfTimesCalled.ShouldBe(0);
         }
 
         [Fact]
@@ -184,7 +211,12 @@ namespace WorldDomination.HttpClient.Helpers.Tests
         {
             // Arrange.
             var messageResponse = FakeHttpMessageHandler.GetStringHttpResponseMessage("pew pew", HttpStatusCode.Unauthorized);
-            var messageHandler = new FakeHttpMessageHandler(RequestUri, messageResponse);
+            var options = new HttpMessageOptions
+            {
+                RequestUri = RequestUri,
+                HttpResponseMessage = messageResponse
+            };
+            var messageHandler = new FakeHttpMessageHandler(options);
 
             HttpResponseMessage message;
             using (var httpClient = new System.Net.Http.HttpClient(messageHandler))
@@ -195,6 +227,7 @@ namespace WorldDomination.HttpClient.Helpers.Tests
 
             // Assert.
             message.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
+            options.NumberOfTimesCalled.ShouldBe(1);
         }
 
         [Fact]
@@ -215,6 +248,30 @@ namespace WorldDomination.HttpClient.Helpers.Tests
 
             // Assert.
             exception.Message.ShouldBe(errorMessage);
+        }
+
+        [Fact]
+        public async Task GivenAFewCallsToAnHttpRequest_GetSomeDataAsync_ReturnsAFakeResponse()
+        {
+            // Arrange.
+            var httpResponseMessage = FakeHttpMessageHandler.GetStringHttpResponseMessage(ExpectedContent);
+            var options = new HttpMessageOptions
+            {
+                HttpResponseMessage = httpResponseMessage
+            };
+            var fakeHttpMessageHandler = new FakeHttpMessageHandler(options);
+
+            // Act & Assert
+            await DoGetAsync(RequestUri,
+                             ExpectedContent,
+                             fakeHttpMessageHandler);
+            await DoGetAsync(RequestUri,
+                             ExpectedContent,
+                             fakeHttpMessageHandler);
+            await DoGetAsync(RequestUri,
+                             ExpectedContent,
+                             fakeHttpMessageHandler);
+            options.NumberOfTimesCalled.ShouldBe(3);
         }
 
         private static async Task DoGetAsync(string requestUri,
