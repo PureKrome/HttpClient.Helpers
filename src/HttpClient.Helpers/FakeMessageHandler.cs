@@ -16,26 +16,10 @@ namespace WorldDomination.Net.Http
 
         private readonly IDictionary<string, HttpMessageOptions> _lotsOfOptions = new Dictionary<string, HttpMessageOptions>();
 
-
         /// <summary>
         /// A fake message handler.
         /// </summary>
         /// <remarks>TIP: If you have a requestUri = "*", this is a catch-all ... so if none of the other requestUri's match, then it will fall back to this dictionary item.</remarks>
-        ///// <param name="httpResponseMessages">A dictionary of request endpoints and their respective fake response message.</param>
-        //public FakeHttpMessageHandler(IDictionary<string, HttpResponseMessage> httpResponseMessages)
-        //{
-        //    if (httpResponseMessages == null)
-        //    {
-        //        throw new ArgumentNullException(nameof(httpResponseMessages));
-        //    }
-
-        //    if (!httpResponseMessages.Any())
-        //    {
-        //        throw new ArgumentOutOfRangeException(nameof(httpResponseMessages));
-        //    }
-
-        //    _responses = httpResponseMessages;
-        //}
         public FakeHttpMessageHandler(HttpMessageOptions options) : this(new List<HttpMessageOptions>
                                                                          {
                                                                              options
