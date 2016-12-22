@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,22 +16,6 @@ namespace WorldDomination.Net.Http
 
         private readonly IDictionary<string, HttpMessageOptions> _lotsOfOptions = new Dictionary<string, HttpMessageOptions>();
 
-
-        /// <summary>
-        /// A fake message handler.
-        /// </summary>
-        /// <remarks>This is mainly used for unit testing purposes.</remarks>
-        /// <param name="requestUri">The endpoint the HttpClient would normally try and connect to.</param>
-        /// <param name="httpResponseMessage">The faked response message.</param>
-        public FakeHttpMessageHandler(string requestUri,
-                                      HttpResponseMessage httpResponseMessage)
-            : this(new HttpMessageOptions
-                   {
-                       RequestUri = requestUri,
-                       HttpResponseMessage = httpResponseMessage
-                   })
-        {
-        }
 
         /// <summary>
         /// A fake message handler.
@@ -58,45 +43,9 @@ namespace WorldDomination.Net.Http
         {
         }
 
-        public FakeHttpMessageHandler(IDictionary<string, HttpResponseMessage> responses)
-        {
-            if (responses == null)
-            {
-                throw new ArgumentNullException(nameof(responses));
-            }
-
-            if (!responses.Any())
-            {
-                throw new ArgumentOutOfRangeException(nameof(responses));
-            }
-
-            // NOTE: We assume HttpGet is the default when none are provided in this 'shortcut' method.
-            var lotsOfOptions = responses.Select(item => new HttpMessageOptions
-                                                 {
-                                                     RequestUri = item.Key,
-                                                     HttpResponseMessage = item.Value,
-                                                     HttpMethod = HttpMethod.Get
-                                                 }).ToArray();
-
-            Initialize(lotsOfOptions);
-        }
-
         public FakeHttpMessageHandler(IEnumerable<HttpMessageOptions> lotsOfOptions)
         {
             Initialize(lotsOfOptions.ToArray());
-        }
-
-        /// <summary>
-        /// A fake message handler which ignores whatever endpoint you're trying to connect to.
-        /// </summary>
-        /// <remarks>This constructor doesn't care what the request endpoint it. So if you're code is trying to hit multuple endpoints, then it will always return the same response message.</remarks>
-        /// <param name="httpResponseMessage">The faked response message.</param>
-        public FakeHttpMessageHandler(HttpResponseMessage httpResponseMessage)
-            : this(new HttpMessageOptions
-                   {
-                       HttpResponseMessage = httpResponseMessage
-                   })
-        {
         }
 
         /// <summary>
@@ -148,6 +97,9 @@ namespace WorldDomination.Net.Http
                     $"No HttpResponseMessage found for the Request Uri: {request.RequestUri}. Please provide one in the FakeHttpMessageHandler constructor Or use a '*' for any request uri. Search-Key: '{requestUri}. Setup: {(!_lotsOfOptions.Any() ? "- no responses -" : _lotsOfOptions.Count.ToString())} responses: {responsesText}";
                 throw new InvalidOperationException(errorMessage);
             }
+
+            // Increment the number of times this option had been 'called'.
+            IncrementCalls(expectedOption);
 
             tcs.SetResult(expectedOption.HttpResponseMessage);
             return tcs.Task;
@@ -206,6 +158,24 @@ namespace WorldDomination.Net.Http
                                                                x.HttpMethod == null) &&
                                                               (x.HttpContent == option.HttpContent ||
                                                                x.HttpContent == null));
+        }
+
+        private static void IncrementCalls(HttpMessageOptions options)
+        {
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            var type = typeof(HttpMessageOptions);
+            var propertyInfo = type.GetProperty("NumberOfTimesCalled");
+            if (propertyInfo == null)
+            {
+                return;
+            }
+
+            var existingValue = (int) propertyInfo.GetValue(options);
+            propertyInfo.SetValue(options, ++existingValue);
         }
     }
 }
