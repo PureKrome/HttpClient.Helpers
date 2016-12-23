@@ -30,12 +30,12 @@ namespace WorldDomination.HttpClient.Helpers.Tests.Wiki_Examples
             return foo;
         }
 
-        private async Task<Foo> GetSomeFooDataAsync()
+        public async Task<Foo> GetSomeFooDataAsync()
         {
             return await GetSomeDataAsync<Foo>(GetFooEndPoint);
         }
 
-        private async Task<Baa> GetSomeBaaDataAsync()
+        public async Task<Baa> GetSomeBaaDataAsync()
         {
             // NOTE: notice how this request endpoint is different to the one, above?
             return await GetSomeDataAsync<Baa>(GetBaaEndPoint);
@@ -58,6 +58,7 @@ namespace WorldDomination.HttpClient.Helpers.Tests.Wiki_Examples
             if (message.StatusCode != HttpStatusCode.OK)
             {
                 // TODO: handle this ru-roh-error.
+                throw new InvalidOperationException(content);
             }
 
             // Assumption: content is in a json format.

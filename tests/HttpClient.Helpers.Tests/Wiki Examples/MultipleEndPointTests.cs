@@ -5,7 +5,7 @@ using Xunit;
 
 namespace WorldDomination.HttpClient.Helpers.Tests.Wiki_Examples
 {
-    public class MultipleEndPointTests
+    public class MultipleEndpointTests
     {
         [Fact]
         public async Task GivenSomeValidHttpRequests_GetSomeDataAsync_ReturnsAFoo()
