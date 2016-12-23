@@ -51,6 +51,9 @@ namespace WorldDomination.Net.Http
             }
         }
 
+        // Note: I'm using reflection to set the value in here because I want this value to be _read-only_.
+        //       Secondly, this occurs during a UNIT TEST, so I consider the expensive reflection costs to be
+        //       acceptable in this situation.
         public int NumberOfTimesCalled { get; private set; }
 
         public override string ToString()
