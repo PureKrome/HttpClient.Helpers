@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Shouldly;
@@ -48,8 +45,8 @@ namespace WorldDomination.HttpClient.Helpers.Tests.Wiki_Examples
             HttpResponseMessage message;
             string content;
             using (var httpClient = _messageHandler == null
-                 ? new System.Net.Http.HttpClient()
-                 : new System.Net.Http.HttpClient(_messageHandler))
+                                        ? new System.Net.Http.HttpClient()
+                                        : new System.Net.Http.HttpClient(_messageHandler))
             {
                 message = await httpClient.GetAsync(endPoint);
                 content = await message.Content.ReadAsStringAsync();
