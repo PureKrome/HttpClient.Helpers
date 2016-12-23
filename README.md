@@ -30,7 +30,7 @@ CLI: `install-package WorldDomination.HttpClient.Helpers`
 ## Sample Code
 
 There's [plenty more examples](https://github.com/PureKrome/HttpClient.Helpers/wiki) about to wire up:
-- [A really simple example](https://github.com/PureKrome/HttpClient.Helpers/wiki/Constructor-Injection)
+- [A really simple example](https://github.com/PureKrome/HttpClient.Helpers/wiki/A-single-endpoint)
 - [Multiple endpoints](https://github.com/PureKrome/HttpClient.Helpers/wiki/Multiple-endpoints) at once
 - [Wildcard endpoints](https://github.com/PureKrome/HttpClient.Helpers/wiki/Wildcard-endpoints)
 - [Throwing exceptions](https://github.com/PureKrome/HttpClient.Helpers/wiki/Faking-an-Exception) and handling it
