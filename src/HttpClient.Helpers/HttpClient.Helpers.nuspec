@@ -18,6 +18,7 @@
         <dependencies>
             <dependency id="Microsoft.Net.Http" version="2.2.29" />
         </dependencies>
+        <releaseNotes>Added support for Headers in HttpMessageOptions.</releaseNotes>
     </metadata>
     <files>
         <file src="bin\Release\WorldDomination.HttpClient.Helpers.dll" target="lib\net45\WorldDomination.HttpClient.Helpers.dll" />
