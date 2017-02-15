@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 
 namespace WorldDomination.Net.Http
@@ -51,6 +53,11 @@ namespace WorldDomination.Net.Http
             }
         }
 
+        /// <summary>
+        /// Optional: If not provided, then assumed to have *no* headers.
+        /// </summary>
+        public IDictionary<string, IEnumerable<string>> Headers { get; set; }
+
         // Note: I'm using reflection to set the value in here because I want this value to be _read-only_.
         //       Secondly, this occurs during a UNIT TEST, so I consider the expensive reflection costs to be
         //       acceptable in this situation.
@@ -59,8 +66,12 @@ namespace WorldDomination.Net.Http
         public override string ToString()
         {
             var httpMethodText = HttpMethod?.ToString() ?? NoValue;
-            return
-                $"{httpMethodText} {RequestUri}{(HttpContent != null ? $" body/content: {_httpContentSerialized}" : "")}";
+
+            var headers = Headers != null &&
+                          Headers.Any()
+                              ? " " + string.Join(":", Headers.Select(x => $"{x.Key}|{string.Join(",", x.Value)}"))
+                              : "";
+            return $"{httpMethodText} {RequestUri}{(HttpContent != null ? $" body/content: {_httpContentSerialized}" : "")}{headers}";
         }
     }
 }
