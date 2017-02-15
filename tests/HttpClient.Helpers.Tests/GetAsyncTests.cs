@@ -76,6 +76,25 @@ namespace WorldDomination.HttpClient.Helpers.Tests
                         HttpResponseMessage = SomeFakeResponse
                     }
                 };
+
+                // Has to match GET + URI + Header
+                yield return new object[]
+                {
+                    new HttpMessageOptions
+                    {
+                        HttpMethod = HttpMethod.Get,
+                        RequestUri = RequestUri,
+                        Headers = new Dictionary<string, IEnumerable<string>>
+                        {
+                            {"Bearer", new[]
+                                {
+                                    "pewpew"
+                                }
+                            }
+                        },
+                        HttpResponseMessage = SomeFakeResponse
+                    }
+                };
             }
         }
 
@@ -118,6 +137,65 @@ namespace WorldDomination.HttpClient.Helpers.Tests
             }
         }
 
+
+        public static IEnumerable<object[]> DifferentHttpMessageOptions
+        {
+            get
+            {
+                yield return new object[]
+                {
+                    // Different uri.
+                    new HttpMessageOptions
+                    {
+                        RequestUri = "http://this.is.a.different.website"
+                    }
+                };
+
+                yield return new object[]
+                {
+                    // Different Method.
+                    new HttpMessageOptions
+                    {
+                        HttpMethod = HttpMethod.Head
+                     }
+                };
+
+                yield return new object[]
+                {
+                    // Different header (different key).
+                    new HttpMessageOptions
+                    {
+                        Headers = new Dictionary<string, IEnumerable<string>>
+                        {
+                            {
+                                "xxxx", new[]
+                                {
+                                    "pewpew"
+                                }
+                            }
+                        }
+                    }
+                };
+
+                yield return new object[]
+                {
+                    // Different header (found key, different content).
+                    new HttpMessageOptions
+                    {
+                        Headers = new Dictionary<string, IEnumerable<string>>
+                        {
+                            {
+                                "Bearer", new[]
+                                {
+                                    "pewpew"
+                                }
+                            }
+                        }
+                    }
+                };
+            }
+        }
+
         [Theory]
         [MemberData(nameof(ValidHttpMessageOptions))]
         public async Task GivenAnHttpMessageOptions_GetAsync_ReturnsAFakeResponse(HttpMessageOptions options)
@@ -125,10 +203,13 @@ namespace WorldDomination.HttpClient.Helpers.Tests
             // Arrange.
             var fakeHttpMessageHandler = new FakeHttpMessageHandler(options);
 
-            // Act & Assert.
+            // Act.
             await DoGetAsync(RequestUri,
                              ExpectedContent,
-                             fakeHttpMessageHandler);
+                             fakeHttpMessageHandler,
+                             options.Headers);
+
+            // Assert.
             options.NumberOfTimesCalled.ShouldBe(1);
         }
 
@@ -274,9 +355,37 @@ namespace WorldDomination.HttpClient.Helpers.Tests
             options.NumberOfTimesCalled.ShouldBe(3);
         }
 
+        [Theory]
+        [MemberData(nameof(DifferentHttpMessageOptions))]
+        public async Task GivenSomeDifferentHttpMessageOptions_GetAsync_ShouldThrowAnException(HttpMessageOptions options)
+        {
+            // Arrange.
+            var fakeHttpMessageHandler = new FakeHttpMessageHandler(options);
+            var headers = new Dictionary<string, IEnumerable<string>>
+            {
+                {
+                    "hi", new[]
+                    {
+                        "there"
+                    }
+                }
+            };
+
+            // Act.
+            var exception = await Should.ThrowAsync<Exception>(() => DoGetAsync(RequestUri,
+                             ExpectedContent,
+                             fakeHttpMessageHandler,
+                             headers));
+
+            // Assert.
+            exception.Message.ShouldStartWith("No HttpResponseMessage found for the Request Uri:");
+            options.NumberOfTimesCalled.ShouldBe(0);
+        }
+
         private static async Task DoGetAsync(string requestUri,
                                              string expectedResponseContent,
-                                             FakeHttpMessageHandler fakeHttpMessageHandler)
+                                             FakeHttpMessageHandler fakeHttpMessageHandler,
+                                             IDictionary<string, IEnumerable<string>> optionalHeaders =null)
         {
             requestUri.ShouldNotBeNullOrWhiteSpace();
             expectedResponseContent.ShouldNotBeNullOrWhiteSpace();
@@ -286,6 +395,16 @@ namespace WorldDomination.HttpClient.Helpers.Tests
             string content;
             using (var httpClient = new System.Net.Http.HttpClient(fakeHttpMessageHandler))
             {
+                // Do we have any Headers?
+                if (optionalHeaders != null &&
+                    optionalHeaders.Any())
+                {
+                    foreach (var keyValue in optionalHeaders)
+                    {
+                        httpClient.DefaultRequestHeaders.Add(keyValue.Key, keyValue.Value);
+                    }
+                }
+
                 // Act.
                 message = await httpClient.GetAsync(requestUri);
                 content = await message.Content.ReadAsStringAsync();

@@ -20,9 +20,9 @@ namespace WorldDomination.Net.Http
         /// </summary>
         /// <remarks>TIP: If you have a requestUri = "*", this is a catch-all ... so if none of the other requestUri's match, then it will fall back to this dictionary item.</remarks>
         public FakeHttpMessageHandler(HttpMessageOptions options) : this(new List<HttpMessageOptions>
-                                                                         {
-                                                                             options
-                                                                         })
+        {
+            options
+        })
         {
         }
 
@@ -61,7 +61,8 @@ namespace WorldDomination.Net.Http
             {
                 RequestUri = requestUri,
                 HttpMethod = request.Method,
-                HttpContent = request.Content
+                HttpContent = request.Content,
+                Headers = request.Headers.ToDictionary(kv => kv.Key, kv => kv.Value)
             };
 
             var expectedOption = GetExpectedOption(option);
@@ -134,7 +135,11 @@ namespace WorldDomination.Net.Http
                                                               (x.HttpMethod == option.HttpMethod ||
                                                                x.HttpMethod == null) &&
                                                               (x.HttpContent == option.HttpContent ||
-                                                               x.HttpContent == null));
+                                                               x.HttpContent == null) &&
+                                                              (x.Headers == null ||
+                                                               x.Headers.Count == 0) ||
+                                                              (x.Headers != null &&
+                                                               HeaderExists(x.Headers, option.Headers)));
         }
 
         private static void IncrementCalls(HttpMessageOptions options)
@@ -153,6 +158,51 @@ namespace WorldDomination.Net.Http
 
             var existingValue = (int) propertyInfo.GetValue(options);
             propertyInfo.SetValue(options, ++existingValue);
+        }
+
+        private static bool HeaderExists(IDictionary<string, IEnumerable<string>> source,
+                                         IDictionary<string, IEnumerable<string>> destination)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+
+            if (destination == null)
+            {
+                throw new ArgumentNullException(nameof(destination));
+            }
+
+            // Both sides are not the same size.
+            if (source.Count != destination.Count)
+            {
+                return false;
+            }
+
+            foreach (var key in source.Keys)
+            {
+                if (!destination.ContainsKey(key))
+                {
+                    // Key is missing from the destination.
+                    return false;
+                }
+
+                if (source[key].Count() != destination[key].Count())
+                {
+                    // The destination now doesn't have the same size of 'values'.
+                    return false;
+                }
+
+                foreach (var value in source[key])
+                {
+                    if (!destination[key].Contains(value))
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
         }
     }
 }
