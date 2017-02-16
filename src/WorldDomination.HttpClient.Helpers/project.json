@@ -1,0 +1,37 @@
+﻿{
+  "version": "1.0.0-*",
+  "title": "HttpClient helpers for System.Net.Http.HttpClient",
+  "authors": [ "Justin Adler" ],
+  "description": "Some simple System.Net.Http.HttpClient helpers to help with your unit tests or when you don't really want to call the endpoint.",
+  
+  "copyright": "2014",
+  "language": "en-AU",
+
+  "dependencies": {
+    "NETStandard.Library": "1.6.1"
+  },
+
+  "frameworks": {
+    "netstandard1.5": {
+      "imports": "dnxcore50",
+      "dependencies": {
+      }
+    },
+    "net45": {
+      "dependencies": {
+        "Microsoft.Bcl": "1.1.10",
+        "Microsoft.Bcl.Build": "1.0.21",
+        "Microsoft.Net.Http": "2.2.29"
+      }
+    }
+  },
+
+  "packOptions": {
+    "requireLicenseAcceptance": false,
+    "owners": [ "Justin Adler" ],
+    "licenseUrl": "https://raw.githubusercontent.com/PureKrome/HttpClient.Helpers/master/LICENSE",
+    "tags": [ "httpclient", "worlddomination", "worldomination", "unicorn", "magicalunicorn", "magical-unicorn" ],
+    "summary": "Some simple System.Net.Http.HttpClient helpers.",
+    "projectUrl": "https://github.com/PureKrome/HttpClient.Helpers"
+  }
+}
