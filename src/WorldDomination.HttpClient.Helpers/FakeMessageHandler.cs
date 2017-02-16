@@ -16,6 +16,8 @@ namespace WorldDomination.Net.Http
 
         private readonly IDictionary<string, HttpMessageOptions> _lotsOfOptions = new Dictionary<string, HttpMessageOptions>();
 
+        private readonly IEqualityComparer<HttpContent> _httpContentEqualityComparer = new HttpContentEqualityComparer();
+
         /// <summary>
         /// A fake message handler.
         /// </summary>
@@ -131,16 +133,17 @@ namespace WorldDomination.Net.Http
                 throw new ArgumentNullException(nameof(option));
             }
 
-            return _lotsOfOptions.Values.SingleOrDefault(x => (x.RequestUri == option.RequestUri ||
-                                                               x.RequestUri == HttpMessageOptions.NoValue) &&
-                                                              (x.HttpMethod == option.HttpMethod ||
-                                                               x.HttpMethod == null) &&
-                                                              (x.HttpContent == option.HttpContent ||
-                                                               x.HttpContent == null) &&
-                                                              (x.Headers == null ||
-                                                               x.Headers.Count == 0) ||
-                                                              (x.Headers != null &&
-                                                               HeaderExists(x.Headers, option.Headers)));
+            IEnumerable<HttpMessageOptions> options = _lotsOfOptions.Values;
+
+            options = options.Where(x => x.RequestUri == option.RequestUri || x.RequestUri == HttpMessageOptions.NoValue);
+
+            options = options.Where(x => x.HttpMethod == option.HttpMethod || x.HttpMethod == null);
+
+            options = options.Where(x => _httpContentEqualityComparer.Equals(x.HttpContent, option.HttpContent));
+
+            options = options.Where(x => x.Headers == null || x.Headers.Count == 0 || (x.Headers != null && HeaderExists(x.Headers, option.Headers)));
+
+            return options.SingleOrDefault();
         }
 
         private static void IncrementCalls(HttpMessageOptions options)
