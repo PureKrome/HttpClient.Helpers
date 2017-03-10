@@ -162,7 +162,7 @@ namespace WorldDomination.Net.Http
 
             options = options.Where(x => x.Headers == null || x.Headers.Count == 0 || (x.Headers != null && HeaderExists(x.Headers, option.Headers)));
 
-            return options.SingleOrDefault();
+            return options.FirstOrDefault();
         }
 
         private static void IncrementCalls(HttpMessageOptions options)
