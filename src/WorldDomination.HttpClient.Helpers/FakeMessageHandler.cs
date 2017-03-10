@@ -82,8 +82,27 @@ namespace WorldDomination.Net.Http
             // Increment the number of times this option had been 'called'.
             IncrementCalls(expectedOption);
 
-            tcs.SetResult(expectedOption.HttpResponseMessage);
+            var result = CreateResponseMessageForRequest(request, expectedOption.HttpResponseMessage);
+
+            tcs.SetResult(result);
             return tcs.Task;
+        }
+
+        private static HttpResponseMessage CreateResponseMessageForRequest(HttpRequestMessage request, HttpResponseMessage templateResponse)
+        {
+            var response = new HttpResponseMessage(templateResponse.StatusCode)
+            {
+                Content = templateResponse.Content,
+                RequestMessage = request,
+                Version = templateResponse.Version
+            };
+
+            foreach (var header in templateResponse.Headers)
+            {
+                response.Headers.Add(header.Key, header.Value);
+            }
+
+            return response;
         }
 
         /// <summary>
