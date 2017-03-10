@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Description>Some simple System.Net.Http.HttpClient helpers to help with your unit tests or when you don't really want to call the endpoint.</Description>
+    <Copyright>2014</Copyright>
+    <AssemblyTitle>HttpClient helpers for System.Net.Http.HttpClient</AssemblyTitle>
+    <NeutralLanguage>en-AU</NeutralLanguage>
+    <Authors>Justin Adler</Authors>
+    <TargetFrameworks>netstandard1.5;net45</TargetFrameworks>
+    <AssemblyName>WorldDomination.HttpClient.Helpers</AssemblyName>
+    <PackageId>WorldDomination.HttpClient.Helpers</PackageId>
+    <PackageTags>httpclient;worlddomination;worldomination;unicorn;magicalunicorn;magical-unicorn</PackageTags>
+    <PackageProjectUrl>https://github.com/PureKrome/HttpClient.Helpers</PackageProjectUrl>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/PureKrome/HttpClient.Helpers/master/LICENSE</PackageLicenseUrl>
+    <NetStandardImplicitPackageVersion>1.6.1</NetStandardImplicitPackageVersion>
+    <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netstandard1.5' ">$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
+    <RootNamespace>WorldDomination.Net.Http</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
+    <PackageReference Include="Microsoft.Bcl" Version="1.1.10" />
+    <PackageReference Include="Microsoft.Bcl.Build" Version="1.0.21" />
+    <PackageReference Include="Microsoft.Net.Http" Version="2.2.29" />
+    <Reference Include="System" />
+    <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+</Project>

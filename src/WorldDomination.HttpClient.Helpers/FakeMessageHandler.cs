@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,6 +15,8 @@ namespace WorldDomination.Net.Http
         private readonly HttpRequestException _exception;
 
         private readonly IDictionary<string, HttpMessageOptions> _lotsOfOptions = new Dictionary<string, HttpMessageOptions>();
+
+        private readonly IEqualityComparer<HttpContent> _httpContentEqualityComparer = new HttpContentEqualityComparer();
 
         /// <summary>
         /// A fake message handler.
@@ -79,8 +82,27 @@ namespace WorldDomination.Net.Http
             // Increment the number of times this option had been 'called'.
             IncrementCalls(expectedOption);
 
-            tcs.SetResult(expectedOption.HttpResponseMessage);
+            var result = CreateResponseMessageForRequest(request, expectedOption.HttpResponseMessage);
+
+            tcs.SetResult(result);
             return tcs.Task;
+        }
+
+        private static HttpResponseMessage CreateResponseMessageForRequest(HttpRequestMessage request, HttpResponseMessage templateResponse)
+        {
+            var response = new HttpResponseMessage(templateResponse.StatusCode)
+            {
+                Content = templateResponse.Content,
+                RequestMessage = request,
+                Version = templateResponse.Version
+            };
+
+            foreach (var header in templateResponse.Headers)
+            {
+                response.Headers.Add(header.Key, header.Value);
+            }
+
+            return response;
         }
 
         /// <summary>
@@ -130,16 +152,17 @@ namespace WorldDomination.Net.Http
                 throw new ArgumentNullException(nameof(option));
             }
 
-            return _lotsOfOptions.Values.SingleOrDefault(x => (x.RequestUri == option.RequestUri ||
-                                                               x.RequestUri == HttpMessageOptions.NoValue) &&
-                                                              (x.HttpMethod == option.HttpMethod ||
-                                                               x.HttpMethod == null) &&
-                                                              (x.HttpContent == option.HttpContent ||
-                                                               x.HttpContent == null) &&
-                                                              (x.Headers == null ||
-                                                               x.Headers.Count == 0) ||
-                                                              (x.Headers != null &&
-                                                               HeaderExists(x.Headers, option.Headers)));
+            IEnumerable<HttpMessageOptions> options = _lotsOfOptions.Values;
+
+            options = options.Where(x => x.RequestUri == option.RequestUri || x.RequestUri == HttpMessageOptions.NoValue);
+
+            options = options.Where(x => x.HttpMethod == option.HttpMethod || x.HttpMethod == null);
+
+            options = options.Where(x => _httpContentEqualityComparer.Equals(x.HttpContent, option.HttpContent));
+
+            options = options.Where(x => x.Headers == null || x.Headers.Count == 0 || (x.Headers != null && HeaderExists(x.Headers, option.Headers)));
+
+            return options.FirstOrDefault();
         }
 
         private static void IncrementCalls(HttpMessageOptions options)
@@ -150,7 +173,7 @@ namespace WorldDomination.Net.Http
             }
 
             var type = typeof(HttpMessageOptions);
-            var propertyInfo = type.GetProperty("NumberOfTimesCalled");
+            var propertyInfo = type.GetTypeInfo().GetProperty("NumberOfTimesCalled");
             if (propertyInfo == null)
             {
                 return;
