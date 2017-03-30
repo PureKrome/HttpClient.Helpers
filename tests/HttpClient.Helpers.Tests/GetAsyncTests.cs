@@ -95,6 +95,25 @@ namespace WorldDomination.HttpClient.Helpers.Tests
                         HttpResponseMessage = SomeFakeResponse
                     }
                 };
+
+                // Has to match GET + URI + Header (but with a different case)
+                yield return new object[]
+                {
+                    new HttpMessageOptions
+                    {
+                        HttpMethod = HttpMethod.Get,
+                        RequestUri = RequestUri.ToUpper(),
+                        Headers = new Dictionary<string, IEnumerable<string>>
+                        {
+                            {"Bearer", new[]
+                                {
+                                    "pewpew"
+                                }
+                            }
+                        },
+                        HttpResponseMessage = SomeFakeResponse
+                    }
+                };
             }
         }
 
@@ -114,7 +133,7 @@ namespace WorldDomination.HttpClient.Helpers.Tests
 
                 yield return new object[]
                 {
-                    // All wildcards.
+                    // Any Uri but has to be a GET.
                     GetSomeFakeHttpMessageOptions(
                         new HttpMessageOptions
                         {
@@ -125,7 +144,7 @@ namespace WorldDomination.HttpClient.Helpers.Tests
 
                 yield return new object[]
                 {
-                    // All wildcards.
+                    // Has to match GET + URI
                     GetSomeFakeHttpMessageOptions(
                         new HttpMessageOptions
                         {
@@ -134,9 +153,20 @@ namespace WorldDomination.HttpClient.Helpers.Tests
                             HttpResponseMessage = SomeFakeResponse
                         })
                 };
+
+                yield return new object[]
+                {
+                    // Has to match GET + URI (case sensitive)
+                    GetSomeFakeHttpMessageOptions(
+                        new HttpMessageOptions
+                        {
+                            HttpMethod = HttpMethod.Get,
+                            RequestUri = RequestUri.ToUpper(),
+                            HttpResponseMessage = SomeFakeResponse
+                        })
+                };
             }
         }
-
 
         public static IEnumerable<object[]> DifferentHttpMessageOptions
         {
@@ -378,7 +408,7 @@ namespace WorldDomination.HttpClient.Helpers.Tests
                              headers));
 
             // Assert.
-            exception.Message.ShouldStartWith("No HttpResponseMessage found for the Request Uri:");
+            exception.Message.ShouldStartWith("No HttpResponseMessage found for the Request => ");
             options.NumberOfTimesCalled.ShouldBe(0);
         }
 
