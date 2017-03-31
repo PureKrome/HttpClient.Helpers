@@ -138,16 +138,21 @@ namespace WorldDomination.Net.Http
                 throw new ArgumentNullException(nameof(option));
             }
 
-            return _lotsOfOptions.Values.SingleOrDefault(x => (x.RequestUri.Equals(option.RequestUri, StringComparison.OrdinalIgnoreCase) ||
-                                                               x.RequestUri == HttpMessageOptions.NoValue) &&
-                                                              (x.HttpMethod == option.HttpMethod ||
-                                                               x.HttpMethod == null) &&
-                                                              (x.HttpContent == option.HttpContent ||
-                                                               x.HttpContent == null) &&
-                                                              (x.Headers == null ||
-                                                               x.Headers.Count == 0) ||
-                                                              (x.Headers != null &&
-                                                               HeaderExists(x.Headers, option.Headers)));
+            // NOTE: We only compare the *setup* HttpMessageOptions properties if they were provided.
+            //       So if there was no HEADERS provided ... but the real 'option' has some, we still ignore
+            //       and don't compare.
+            return _lotsOfOptions.Values.SingleOrDefault(x => (x.RequestUri == HttpMessageOptions.NoValue || // Don't care about the Request Uri.
+                                                               x.RequestUri.Equals(option.RequestUri, StringComparison.OrdinalIgnoreCase)) && 
+
+                                                              (x.HttpMethod == null || // Don't care about the HttpMethod.
+                                                               x.HttpMethod == option.HttpMethod) &&
+
+                                                              (x.HttpContent == null || // Don't care about the Content.
+                                                               ContentAreEqual(x.HttpContent, option.HttpContent)) &&
+
+                                                              (x.Headers == null || // Don't care about the Header.
+                                                               x.Headers.Count == 0 || // No header's were supplied, so again don't care/
+                                                               HeadersAreEqual(x.Headers, option.Headers)));
         }
 
         private static void IncrementCalls(HttpMessageOptions options)
@@ -168,17 +173,51 @@ namespace WorldDomination.Net.Http
             propertyInfo.SetValue(options, ++existingValue);
         }
 
-        private static bool HeaderExists(IDictionary<string, IEnumerable<string>> source,
-                                         IDictionary<string, IEnumerable<string>> destination)
+        private static bool ContentAreEqual(HttpContent source, HttpContent destination)
         {
-            if (source == null)
+            if (source == null &&
+                destination == null)
             {
-                throw new ArgumentNullException(nameof(source));
+                // Both are null - so they match :P
+                return true;
             }
 
-            if (destination == null)
+            if (source == null ||
+                destination == null)
             {
-                throw new ArgumentNullException(nameof(destination));
+                return false;
+            }
+            
+            // Extract the content from both HttpContent's.
+            var sourceContentTask = source.ReadAsStringAsync();
+            var destinationContentTask = destination.ReadAsStringAsync();
+            var tasks = new List<Task>
+            {
+                sourceContentTask,
+                destinationContentTask
+            };
+            Task.WaitAll(tasks.ToArray());
+
+            // Now compare both results.
+            // NOTE: Case sensitive.
+            return sourceContentTask.Result == destinationContentTask.Result;
+        }
+
+        private static bool HeadersAreEqual(IDictionary<string, IEnumerable<string>> source,
+                                            IDictionary<string, IEnumerable<string>> destination)
+        {
+            if (source == null &&
+                destination == null)
+            {
+                // Nothing from both .. so that's ok!
+                return true;
+            }
+
+            if (source == null ||
+                destination == null)
+            {
+                // At least one is different so don't bother checking.
+                return false;
             }
 
             // Both sides are not the same size.

@@ -18,15 +18,25 @@ namespace WorldDomination.HttpClient.Helpers.Tests
         {
             get
             {
+                // Source content, Expected Content.
+                // NOTE: we have to duplicate the source/expected below so we 
+                //       test that they are **separate memory references** and not the same
+                //       memory reference.
                 yield return new object[]
                 {
                     // Sample json.
+                    new StringContent("{\"id\":1}", Encoding.UTF8),
                     new StringContent("{\"id\":1}", Encoding.UTF8)
                 };
 
                 yield return new object[]
                 {
                     // Form key/values.
+                    new FormUrlEncodedContent(new[]
+                                              {
+                                                  new KeyValuePair<string, string>("a", "b"),
+                                                  new KeyValuePair<string, string>("c", "1")
+                                              }),
                     new FormUrlEncodedContent(new[]
                                               {
                                                   new KeyValuePair<string, string>("a", "b"),
@@ -49,6 +59,13 @@ namespace WorldDomination.HttpClient.Helpers.Tests
 
                 yield return new object[]
                 {
+                    // Sample json.
+                    new StringContent("{\"id\":1}", Encoding.UTF8),
+                    new StringContent("{\"ID\":1}", Encoding.UTF8) // Case has changed.
+                };
+
+                yield return new object[]
+                {
                     // Form key/values.
                     new FormUrlEncodedContent(new[]
                                               {
@@ -65,7 +82,8 @@ namespace WorldDomination.HttpClient.Helpers.Tests
 
         [Theory]
         [MemberData(nameof(ValidPostHttpContent))]
-        public async Task GivenAPostRequest_PostAsync_ReturnsAFakeResponse(HttpContent httpContent)
+        public async Task GivenAPostRequest_PostAsync_ReturnsAFakeResponse(HttpContent expectedHttpContent,
+                                                                           HttpContent sentHttpContent)
         {
             // Arrange.
             const string requestUri = "http://www.something.com/some/website";
@@ -74,7 +92,7 @@ namespace WorldDomination.HttpClient.Helpers.Tests
             {
                 HttpMethod = HttpMethod.Post,
                 RequestUri = requestUri,
-                HttpContent = httpContent,
+                HttpContent = expectedHttpContent, // This makes sure it's two separate memory references.
                 HttpResponseMessage = new HttpResponseMessage(HttpStatusCode.OK)
                 {
                     Content = new StringContent(responseContent)
@@ -88,7 +106,7 @@ namespace WorldDomination.HttpClient.Helpers.Tests
             using (var httpClient = new System.Net.Http.HttpClient(messageHandler))
             {
                 // Act.
-                message = await httpClient.PostAsync(requestUri, httpContent);
+                message = await httpClient.PostAsync(requestUri, sentHttpContent);
                 content = await message.Content.ReadAsStringAsync();
             }
 
