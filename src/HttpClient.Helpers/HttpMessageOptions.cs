@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace WorldDomination.Net.Http
 {
@@ -49,7 +50,9 @@ namespace WorldDomination.Net.Http
             set
             {
                 _httpContent = value;
-                _httpContentSerialized = _httpContent?.ReadAsStringAsync().Result ?? NoValue;
+                _httpContentSerialized = _httpContent == null
+                    ? NoValue
+                    : Task.Run(_httpContent.ReadAsStringAsync).Result;
             }
         }
 

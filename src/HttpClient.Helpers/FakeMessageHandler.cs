@@ -84,6 +84,9 @@ namespace WorldDomination.Net.Http
             // Increment the number of times this option had been 'called'.
             IncrementCalls(expectedOption);
 
+            // Pass the request along.
+            expectedOption.HttpResponseMessage.RequestMessage = request;
+
             tcs.SetResult(expectedOption.HttpResponseMessage);
             return tcs.Task;
         }
