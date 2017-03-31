@@ -68,11 +68,16 @@ namespace WorldDomination.Net.Http
             var expectedOption = GetExpectedOption(option);
             if (expectedOption == null)
             {
-                // Nope - no keys found exactly OR starting-with...
-
-                var responsesText = string.Join(";", _lotsOfOptions.Values);
+                // Nope - no matches found :~(
+                var contentMessage = request.Content == null
+                    ? "no content"
+                    : "has some content";
+                var headersMessage = request.Headers == null
+                    ? "no headers"
+                    : $"{request.Headers.Count()} Header(s)";
+                var responsesText = string.Join("; ", _lotsOfOptions.Values);
                 var errorMessage =
-                    $"No HttpResponseMessage found for the Request Uri: {request.RequestUri}. Please provide one in the FakeHttpMessageHandler constructor Or use a '*' for any request uri. Search-Key: '{requestUri}. Setup: {(!_lotsOfOptions.Any() ? "- no responses -" : _lotsOfOptions.Count.ToString())} responses: {responsesText}";
+                    $"No HttpResponseMessage found for the Request => {request.Method} {request.RequestUri} [Content: {contentMessage} / Headers: {headersMessage}]. Please check the settings for your HttpRequestMessage instance which are provided one in the FakeHttpMessageHandler constructor. Debug help => You have setup: {(!_lotsOfOptions.Any() ? "- no responses -" : _lotsOfOptions.Count.ToString())} responses: {responsesText}";
                 throw new InvalidOperationException(errorMessage);
             }
 
@@ -130,7 +135,7 @@ namespace WorldDomination.Net.Http
                 throw new ArgumentNullException(nameof(option));
             }
 
-            return _lotsOfOptions.Values.SingleOrDefault(x => (x.RequestUri == option.RequestUri ||
+            return _lotsOfOptions.Values.SingleOrDefault(x => (x.RequestUri.Equals(option.RequestUri, StringComparison.OrdinalIgnoreCase) ||
                                                                x.RequestUri == HttpMessageOptions.NoValue) &&
                                                               (x.HttpMethod == option.HttpMethod ||
                                                                x.HttpMethod == null) &&
