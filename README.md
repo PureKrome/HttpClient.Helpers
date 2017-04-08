@@ -47,7 +47,7 @@ Thank you David! :ok_hand: :cocktail: :space_invader:
 
 -----
 
-###Summary
+### Summary
 
 Finally, unit testing `HttpClient` is now awesome and simple!
 
