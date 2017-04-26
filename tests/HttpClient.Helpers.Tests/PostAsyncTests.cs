@@ -86,7 +86,7 @@ namespace WorldDomination.HttpClient.Helpers.Tests
                                                                            HttpContent sentHttpContent)
         {
             // Arrange.
-            const string requestUri = "http://www.something.com/some/website";
+            Uri requestUri = new Uri("http://www.something.com/some/website");
             const string responseContent = "hi";
             var options = new HttpMessageOptions
             {
@@ -125,7 +125,7 @@ namespace WorldDomination.HttpClient.Helpers.Tests
             var options = new HttpMessageOptions
             {
                 HttpMethod = HttpMethod.Post,
-                RequestUri = "http://www.something.com/some/website",
+                RequestUri = new Uri("http://www.something.com/some/website"),
                 HttpContent = expectedHttpContent,
                 HttpResponseMessage = new HttpResponseMessage(HttpStatusCode.OK)
                 {

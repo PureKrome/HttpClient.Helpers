@@ -8,9 +8,13 @@
 
 version: '{build}.0.0-dev'
 configuration: Release
-os: Visual Studio 2015
+os: Visual Studio 2017
 pull_requests:
   do_not_increment_build_number: true
+environment:
+  project_name: HttpClient.Helpers
+  library_project_file: 'src\%project_name%\%project_name%.csproj'
+  tests_project_file: 'tests\%project_name%.Tests\%project_name%.Tests.csproj'
 
 # Override the 'version' if this is a GH-tag-commit -or- this is a custom branch (i.e not 'master').
 init:
@@ -23,22 +27,19 @@ init:
       iex ((new-object net.webclient).DownloadString('https://gist.githubusercontent.com/PureKrome/0f79e25693d574807939/raw/f5b40256fc2ca77d49f1c7773d28406152544c1e/appveyor-build-info.ps'))
                                        
 before_build:
-  - nuget restore
+  - dotnet --info
+  - dotnet restore 
 
-assembly_info:
-  patch: true
-  file: AssemblyInfo.*
-  assembly_version: $(appveyor_build_version)
-  assembly_file_version: $(appveyor_build_version)
-  assembly_informational_version: $(appveyor_build_version)
+build_script:
+  - dotnet build -c %CONFIGURATION% /p:Version=%APPVEYOR_BUILD_VERSION%
 
-build:
-  parallel: true
-  verbosity: minimal
-  publish_nuget: true
-  publish_nuget_symbols: false
-  include_nuget_references: false
-  
+test_script:
+  - dotnet test %tests_project_file% -c %CONFIGURATION% -v normal --no-build
+  - dotnet pack %library_project_file% /p:Version=%APPVEYOR_BUILD_VERSION% --no-build
+
+artifacts:
+  - path: '**\*.nupkg'
+
 deploy:
   - provider: NuGet
     server: https://www.myget.org/F/pk-development/api/v2/package
