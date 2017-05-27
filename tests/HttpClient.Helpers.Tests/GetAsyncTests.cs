@@ -14,7 +14,7 @@ namespace WorldDomination.HttpClient.Helpers.Tests
 {
     public class GetAsyncTests
     {
-        private const string RequestUri = "http://www.something.com/some/website";
+        private static Uri RequestUri = new Uri("http://www.something.com/some/website");
         private const string ExpectedContent = "pew pew";
 
         private static List<HttpMessageOptions> GetSomeFakeHttpMessageOptions(HttpMessageOptions option)
@@ -24,13 +24,13 @@ namespace WorldDomination.HttpClient.Helpers.Tests
                 new HttpMessageOptions
                 {
                     HttpMethod = HttpMethod.Get,
-                    RequestUri = "http://some/url",
+                    RequestUri = new Uri("http://some/url"),
                     HttpResponseMessage = SomeFakeResponse
                 },
                 new HttpMessageOptions
                 {
                     HttpMethod = HttpMethod.Get,
-                    RequestUri = "http://another/url",
+                    RequestUri = new Uri("http://another/url"),
                     HttpResponseMessage = SomeFakeResponse
                 },
                 option
@@ -102,12 +102,12 @@ namespace WorldDomination.HttpClient.Helpers.Tests
                     new HttpMessageOptions
                     {
                         HttpMethod = HttpMethod.Get,
-                        RequestUri = RequestUri.ToUpper(),
+                        RequestUri = RequestUri,
                         Headers = new Dictionary<string, IEnumerable<string>>
                         {
                             {"Bearer", new[]
                                 {
-                                    "pewpew"
+                                    "PEWPEW"
                                 }
                             }
                         },
@@ -161,7 +161,7 @@ namespace WorldDomination.HttpClient.Helpers.Tests
                         new HttpMessageOptions
                         {
                             HttpMethod = HttpMethod.Get,
-                            RequestUri = RequestUri.ToUpper(),
+                            RequestUri = new Uri(RequestUri.AbsoluteUri.ToUpper()),
                             HttpResponseMessage = SomeFakeResponse
                         })
                 };
@@ -177,7 +177,7 @@ namespace WorldDomination.HttpClient.Helpers.Tests
                     // Different uri.
                     new HttpMessageOptions
                     {
-                        RequestUri = "http://this.is.a.different.website"
+                        RequestUri = new Uri("http://this.is.a.different.website")
                     }
                 };
 
@@ -296,12 +296,12 @@ namespace WorldDomination.HttpClient.Helpers.Tests
                 },
                 new HttpMessageOptions
                 {
-                    RequestUri = "http://www.something.com/another/site",
+                    RequestUri = new Uri("http://www.something.com/another/site"),
                     HttpResponseMessage = messageResponse2
                 },
                 new HttpMessageOptions
                 {
-                    RequestUri = "http://www.whatever.com/",
+                    RequestUri = new Uri("http://www.whatever.com/"),
                     HttpResponseMessage = messageResponse3
                 },
             };
@@ -412,12 +412,12 @@ namespace WorldDomination.HttpClient.Helpers.Tests
             options.NumberOfTimesCalled.ShouldBe(0);
         }
 
-        private static async Task DoGetAsync(string requestUri,
+        private static async Task DoGetAsync(Uri requestUri,
                                              string expectedResponseContent,
                                              FakeHttpMessageHandler fakeHttpMessageHandler,
                                              IDictionary<string, IEnumerable<string>> optionalHeaders =null)
         {
-            requestUri.ShouldNotBeNullOrWhiteSpace();
+            requestUri.ShouldNotBeNull();
             expectedResponseContent.ShouldNotBeNullOrWhiteSpace();
             fakeHttpMessageHandler.ShouldNotBeNull();
 

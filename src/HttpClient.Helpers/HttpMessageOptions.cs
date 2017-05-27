@@ -8,28 +8,14 @@ namespace WorldDomination.Net.Http
 {
     public class HttpMessageOptions
     {
-        public const string NoValue = "*";
+        private const string _anyValue = "*";
         private HttpContent _httpContent;
         private string _httpContentSerialized;
-        private string _requestUri = NoValue;
 
         /// <summary>
-        /// Required: End url we are targetting.
+        /// The endpoint we are trying to call/hit/test.
         /// </summary>
-        public string RequestUri
-        {
-            get { return _requestUri; }
-            set
-            {
-                if (string.IsNullOrWhiteSpace(value))
-                {
-                    throw new ArgumentNullException(nameof(value),
-                                                    "RequestUri cannot be null/empty/whitespace. Please choose a valid RequestUri.");
-                }
-
-                _requestUri = value;
-            }
-        }
+        public Uri RequestUri { get; set; }
 
         /// <summary>
         /// Optional: If not provided, then assumed to be *any* method.
@@ -51,7 +37,7 @@ namespace WorldDomination.Net.Http
             {
                 _httpContent = value;
                 _httpContentSerialized = _httpContent == null
-                    ? NoValue
+                    ? null
                     : Task.Run(_httpContent.ReadAsStringAsync).Result;
             }
         }
@@ -68,7 +54,7 @@ namespace WorldDomination.Net.Http
 
         public override string ToString()
         {
-            var httpMethodText = HttpMethod?.ToString() ?? NoValue;
+            var httpMethodText = HttpMethod?.ToString() ?? _anyValue;
 
             var headers = Headers != null &&
                           Headers.Any()

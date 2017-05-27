@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Reflection;
 
 namespace WorldDomination.Net.Http
 {
@@ -56,7 +57,7 @@ namespace WorldDomination.Net.Http
 
             var tcs = new TaskCompletionSource<HttpResponseMessage>();
 
-            var requestUri = request.RequestUri.AbsoluteUri;
+            var requestUri = new Uri(request.RequestUri.AbsoluteUri);
             var option = new HttpMessageOptions
             {
                 RequestUri = requestUri,
@@ -141,8 +142,8 @@ namespace WorldDomination.Net.Http
             // NOTE: We only compare the *setup* HttpMessageOptions properties if they were provided.
             //       So if there was no HEADERS provided ... but the real 'option' has some, we still ignore
             //       and don't compare.
-            return _lotsOfOptions.Values.SingleOrDefault(x => (x.RequestUri == HttpMessageOptions.NoValue || // Don't care about the Request Uri.
-                                                               x.RequestUri.Equals(option.RequestUri, StringComparison.OrdinalIgnoreCase)) && 
+            return _lotsOfOptions.Values.SingleOrDefault(x => (x.RequestUri == null || // Don't care about the Request Uri.
+                                                               x.RequestUri.AbsoluteUri.Equals(option.RequestUri.AbsoluteUri, StringComparison.OrdinalIgnoreCase)) && 
 
                                                               (x.HttpMethod == null || // Don't care about the HttpMethod.
                                                                x.HttpMethod == option.HttpMethod) &&
@@ -163,7 +164,9 @@ namespace WorldDomination.Net.Http
             }
 
             var type = typeof(HttpMessageOptions);
-            var propertyInfo = type.GetProperty("NumberOfTimesCalled");
+            var propertyInfo = type.GetTypeInfo()
+                                   ?.GetDeclaredProperty("NumberOfTimesCalled");
+            //var propertyInfo = type.GetProperty("NumberOfTimesCalled");
             if (propertyInfo == null)
             {
                 return;
