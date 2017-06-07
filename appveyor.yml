@@ -35,7 +35,7 @@ build_script:
 
 test_script:
   - dotnet test %tests_project_file% -c %CONFIGURATION% -v normal --no-build
-  - dotnet pack %library_project_file% /p:Version=%APPVEYOR_BUILD_VERSION% --no-build
+  - dotnet pack %library_project_file% -c %CONFIGURATION% /p:Version=%APPVEYOR_BUILD_VERSION% --no-build
 
 artifacts:
   - path: '**\*.nupkg'

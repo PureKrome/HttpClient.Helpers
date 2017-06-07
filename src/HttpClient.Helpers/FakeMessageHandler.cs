@@ -39,12 +39,7 @@ namespace WorldDomination.Net.Http
         /// <param name="exception">The exception that will occur.</param>
         public FakeHttpMessageHandler(HttpRequestException exception)
         {
-            if (exception == null)
-            {
-                throw new ArgumentNullException(nameof(exception));
-            }
-
-            _exception = exception;
+            _exception = exception ?? throw new ArgumentNullException(nameof(exception));
         }
 
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,

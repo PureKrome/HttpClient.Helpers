@@ -15,6 +15,8 @@
     <PackageIconUrl>http://i.imgur.com/bR4Yf.jpg</PackageIconUrl>
     <RepositoryUrl>https://github.com/PureKrome/HttpClient.Helpers</RepositoryUrl>
     <PackageTags>httpclient worlddomination worldomination unicorn magicalunicorn magical-unicorn</PackageTags>
+    <RootNamespace>WorldDomination.Net.Http</RootNamespace>
+    <AssemblyName>WorldDomination.HttpClient.Helpers</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
