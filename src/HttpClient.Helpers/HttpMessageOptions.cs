@@ -8,7 +8,7 @@ namespace WorldDomination.Net.Http
 {
     public class HttpMessageOptions
     {
-        private const string _anyValue = "*";
+        private const string AnyValue = "*";
         private HttpContent _httpContent;
         private string _httpContentSerialized;
 
@@ -32,7 +32,7 @@ namespace WorldDomination.Net.Http
         /// </summary>
         public HttpContent HttpContent
         {
-            get { return _httpContent; }
+            get => _httpContent;
             set
             {
                 _httpContent = value;
@@ -50,11 +50,12 @@ namespace WorldDomination.Net.Http
         // Note: I'm using reflection to set the value in here because I want this value to be _read-only_.
         //       Secondly, this occurs during a UNIT TEST, so I consider the expensive reflection costs to be
         //       acceptable in this situation.
+        // ReSharper disable once UnusedAutoPropertyAccessor.Local
         public int NumberOfTimesCalled { get; private set; }
 
         public override string ToString()
         {
-            var httpMethodText = HttpMethod?.ToString() ?? _anyValue;
+            var httpMethodText = HttpMethod?.ToString() ?? AnyValue;
 
             var headers = Headers != null &&
                           Headers.Any()
