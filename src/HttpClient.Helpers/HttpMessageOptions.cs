@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -13,7 +13,7 @@ namespace WorldDomination.Net.Http
         private string _httpContentSerialized;
 
         /// <summary>
-        /// The endpoint we are trying to call/hit/test.
+        /// Optional: If not provided, then assumed to be *any* endpoint. Otherise, the endpoint we are trying to call/hit/test.
         /// </summary>
         public Uri RequestUri { get; set; }
 
@@ -59,9 +59,9 @@ namespace WorldDomination.Net.Http
 
             var headers = Headers != null &&
                           Headers.Any()
-                              ? " " + string.Join(":", Headers.Select(x => $"{x.Key}|{string.Join(",", x.Value)}"))
+                              ? " || Headers: " + string.Join(":", Headers.Select(x => $"{x.Key}|{string.Join(",", x.Value)}"))
                               : "";
-            return $"{httpMethodText} {RequestUri}{(HttpContent != null ? $" body/content: {_httpContentSerialized}" : "")}{headers}";
+            return $"{httpMethodText} {RequestUri}{(HttpContent != null ? $" || body/content: {_httpContentSerialized}" : "")}{headers}";
         }
     }
 }

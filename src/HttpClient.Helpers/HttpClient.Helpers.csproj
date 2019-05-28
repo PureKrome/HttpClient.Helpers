@@ -18,10 +18,4 @@
     <RootNamespace>WorldDomination.Net.Http</RootNamespace>
     <AssemblyName>WorldDomination.HttpClient.Helpers</AssemblyName>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Remove="HttpClient.Helpers.nuspec" />
-    <None Remove="packages.config" />
-  </ItemGroup>
-
 </Project>
