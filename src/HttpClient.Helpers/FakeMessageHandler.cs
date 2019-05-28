@@ -1,12 +1,12 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Reflection;
 
 namespace WorldDomination.Net.Http
 {
@@ -20,10 +20,7 @@ namespace WorldDomination.Net.Http
         /// A fake message handler.
         /// </summary>
         /// <remarks>TIP: If you have a requestUri = "*", this is a catch-all ... so if none of the other requestUri's match, then it will fall back to this dictionary item.</remarks>
-        public FakeHttpMessageHandler(HttpMessageOptions options) : this(new List<HttpMessageOptions>
-        {
-            options
-        })
+        public FakeHttpMessageHandler(HttpMessageOptions options) : this(new List<HttpMessageOptions> { options })
         {
         }
 
@@ -64,16 +61,19 @@ namespace WorldDomination.Net.Http
             var expectedOption = GetExpectedOption(option);
             if (expectedOption == null)
             {
-                // Nope - no matches found :~(
-                var contentMessage = request.Content == null
-                    ? "no content"
-                    : "has some content";
-                var headersMessage = request.Headers == null
-                    ? "no headers"
-                    : $"{request.Headers.Count()} Header(s)";
-                var responsesText = string.Join("; ", _lotsOfOptions.Values);
-                var errorMessage =
-                    $"No HttpResponseMessage found for the Request => {request.Method} {request.RequestUri} [Content: {contentMessage} / Headers: {headersMessage}]. Please check the settings for your HttpRequestMessage instance which are provided one in the FakeHttpMessageHandler constructor. Debug help => You have setup: {(!_lotsOfOptions.Any() ? "- no responses -" : _lotsOfOptions.Count.ToString())} responses: {responsesText}";
+                var setupOptionsText = new StringBuilder();
+
+                var setupOptions = _lotsOfOptions.Values.ToList();
+                for (var i = 0; i < setupOptions.Count; i++)
+                {
+                    if (i > 0)
+                    {
+                        setupOptionsText.Append(" ");
+                    }
+                    setupOptionsText.Append($"{i + 1}) {setupOptions[i]}.");
+                }
+
+                var errorMessage = $"No HttpResponseMessage found for the Request => What was called: [{option}]. At least one of these option(s) should have been matched: [{setupOptionsText}]";
                 throw new InvalidOperationException(errorMessage);
             }
 
@@ -138,7 +138,7 @@ namespace WorldDomination.Net.Http
             //       So if there was no HEADERS provided ... but the real 'option' has some, we still ignore
             //       and don't compare.
             return _lotsOfOptions.Values.SingleOrDefault(x => (x.RequestUri == null || // Don't care about the Request Uri.
-                                                               x.RequestUri.AbsoluteUri.Equals(option.RequestUri.AbsoluteUri, StringComparison.OrdinalIgnoreCase)) && 
+                                                               x.RequestUri.AbsoluteUri.Equals(option.RequestUri.AbsoluteUri, StringComparison.OrdinalIgnoreCase)) &&
 
                                                               (x.HttpMethod == null || // Don't care about the HttpMethod.
                                                                x.HttpMethod == option.HttpMethod) &&
@@ -167,7 +167,7 @@ namespace WorldDomination.Net.Http
                 return;
             }
 
-            var existingValue = (int) propertyInfo.GetValue(options);
+            var existingValue = (int)propertyInfo.GetValue(options);
             propertyInfo.SetValue(options, ++existingValue);
         }
 
@@ -185,7 +185,7 @@ namespace WorldDomination.Net.Http
             {
                 return false;
             }
-            
+
             // Extract the content from both HttpContent's.
             var sourceContentTask = source.ReadAsStringAsync();
             var destinationContentTask = destination.ReadAsStringAsync();
