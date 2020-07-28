@@ -78,7 +78,7 @@ namespace WorldDomination.Net.Http
             }
 
             // Increment the number of times this option had been 'called'.
-            IncrementCalls(expectedOption);
+            expectedOption.IncrementNumberOfTimesCalled();
 
             // Pass the request along.
             expectedOption.HttpResponseMessage.RequestMessage = request;
@@ -149,26 +149,6 @@ namespace WorldDomination.Net.Http
                                                               (x.Headers == null || // Don't care about the Header.
                                                                x.Headers.Count == 0 || // No header's were supplied, so again don't care/
                                                                HeadersAreEqual(x.Headers, option.Headers)));
-        }
-
-        private static void IncrementCalls(HttpMessageOptions options)
-        {
-            if (options == null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
-
-            var type = typeof(HttpMessageOptions);
-            var propertyInfo = type.GetTypeInfo()
-                                   ?.GetDeclaredProperty("NumberOfTimesCalled");
-            //var propertyInfo = type.GetProperty("NumberOfTimesCalled");
-            if (propertyInfo == null)
-            {
-                return;
-            }
-
-            var existingValue = (int)propertyInfo.GetValue(options);
-            propertyInfo.SetValue(options, ++existingValue);
         }
 
         private static bool ContentAreEqual(HttpContent source, HttpContent destination)
