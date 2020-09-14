@@ -32,7 +32,7 @@ CLI: `install-package WorldDomination.HttpClient.Helpers`
 ## TL;DR; Show me some code that leverages HttpClientFactory
 
 What is `HttpClientFactory`? [Read up about it here](https://docs.microsoft.com/en-us/dotnet/standard/microservices-architecture/implement-resilient-applications/use-httpclientfactory-to-implement-resilient-http-requests). You should be using that in your applications, peeps.
-```
+```C#
 // Service that accepts an HttpClient so it has been setup to work nicely with HttpClientFactory.
 public class MyService : IMyService
 { 
