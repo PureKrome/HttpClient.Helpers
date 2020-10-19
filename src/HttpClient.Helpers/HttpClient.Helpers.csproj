@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -10,26 +10,35 @@
     <Version>0.0.0</Version>
     <Product>HttpClient helpers for System.Net.Http.HttpClient</Product>
     <Copyright>2014</Copyright>
-    <PackageLicenseUrl>https://raw.githubusercontent.com/PureKrome/HttpClient.Helpers/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/PureKrome/HttpClient.Helpers</PackageProjectUrl>
-    <PackageIconUrl>http://i.imgur.com/bR4Yf.jpg</PackageIconUrl>
     <RepositoryUrl>https://github.com/PureKrome/HttpClient.Helpers</RepositoryUrl>
     <PackageTags>httpclient worlddomination worldomination unicorn magicalunicorn magical-unicorn</PackageTags>
     <RootNamespace>WorldDomination.Net.Http</RootNamespace>
     <AssemblyName>WorldDomination.HttpClient.Helpers</AssemblyName>
 
     <!-- Sourcelink: https://github.com/dotnet/sourcelink -->
-    <!-- Optional: Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <!-- Optional: Embed source files that are not tracked by the source control manager in the PDB -->
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <!-- Optional: Build symbol package (.snupkg) to distribute the PDB containing Source Link -->
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+    <PackageIcon>icon.jpg</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\icon.jpg">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+    <None Include="..\..\LICENSE.md">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
   
 </Project>

@@ -55,7 +55,7 @@ after_test:
       
       if ($env:CONFIGURATION -eq 'Release')
       {
-          dotnet pack -c $env:CONFIGURATION --include-symbols -p:SymbolPackageFormat=snupkg /p:Version=$env:APPVEYOR_BUILD_VERSION --no-build
+          dotnet pack -c $env:CONFIGURATION --no-build /p:ContinuousIntegrationBuild=true /p:Version=$env:APPVEYOR_BUILD_VERSION
       }
 
 artifacts:
