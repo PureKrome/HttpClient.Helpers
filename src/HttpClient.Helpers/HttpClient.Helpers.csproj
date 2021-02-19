@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0;net5.0</TargetFrameworks>
     <Description>Some simple System.Net.Http.HttpClient helpers to help with your unit tests or when you don't really want to call the endpoint.</Description>
     <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
     <Company>World-Domination Technologies Pty. Ltd.</Company>
