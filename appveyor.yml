@@ -31,7 +31,7 @@ before_build:
 
 build_script:
   - dotnet restore --verbosity quiet
-  - ps: dotnet build -c $env:CONFIGURATION -v minimal /p:Version=$env:APPVEYOR_BUILD_VERSION --no-restore
+  - ps: dotnet build -c $env:CONFIGURATION -v minimal --no-restore /p:ContinuousIntegrationBuild=true -p:Version=$env:APPVEYOR_BUILD_VERSION
 
 test_script:
   - ps: |
@@ -59,7 +59,7 @@ after_test:
       
       if ($env:CONFIGURATION -eq 'Release')
       {
-          dotnet pack -c $env:CONFIGURATION --no-build /p:ContinuousIntegrationBuild=true /p:Version=$env:APPVEYOR_BUILD_VERSION
+          dotnet pack -c $env:CONFIGURATION --no-build -p:PackageVersion=$env:APPVEYOR_BUILD_VERSION
       }
 
 artifacts:
